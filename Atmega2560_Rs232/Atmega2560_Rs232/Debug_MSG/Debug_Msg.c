@@ -5,6 +5,9 @@
  *  Author: Lukasz
  */ 
 #include "Debug_Msg.h"
+#ifdef WIN32
+#include <stdio.h>
+#endif
 
 STATUS DMsgMessage(IN DMsg_LENGTH MessageLength, IN unsigned char *pMessage)
 {
@@ -13,6 +16,7 @@ STATUS DMsgMessage(IN DMsg_LENGTH MessageLength, IN unsigned char *pMessage)
 	#endif /* DEBUG_MSG	 */
 	
 #ifdef WIN32
+		printf(pMessage);
 		return STATUS_SUCCESS;
 #else
 	return USART_Transmit(IN UART_DMsg, IN MessageLength, pMessage);
@@ -26,6 +30,7 @@ STATUS DMsgMessageNewPage(IN DMsg_LENGTH MessageLength, IN unsigned char *pMessa
 	#endif /* DEBUG_MSG	 */
 	
 #ifdef WIN32
+		printf("\f%s", pMessage);
 		return STATUS_SUCCESS;
 #else
 	if(STATUS_FAILURE == USART_TransmitByteByFifo( IN UART_DMsg, IN 0xC))
@@ -42,6 +47,7 @@ STATUS DMsgMessageNewLine(IN DMsg_LENGTH MessageLength, IN unsigned char *pMessa
 	#endif /* DEBUG_MSG	 */
 	
 #ifdef WIN32
+		printf("\n%s", pMessage);
 		return STATUS_SUCCESS;
 #else
 	if(STATUS_FAILURE == USART_TransmitByteByFifo( IN UART_DMsg, IN 0xA))
