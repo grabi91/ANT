@@ -32,3 +32,4 @@ _ReSharper*/
 packages/
 #Moje
 *.opensdf
+!Debug_MSG/
