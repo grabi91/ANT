@@ -27,7 +27,7 @@
     <ClCompile Include="..\..\Atmega2560_Rs232\Atmega2560_Rs232\Atmega2560_Rs232.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Main.c">
+    <ClCompile Include="Main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

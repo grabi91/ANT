@@ -1,4 +1,12 @@
+extern "C" {
 #include "../../Atmega2560_Rs232/Atmega2560_Rs232/Debug_MSG/Debug_Msg.h"
+}
+
+#using <System.dll>
+
+using namespace System;
+using namespace System::IO::Ports;
+using namespace System::Threading;
 
 int main(int argc, char **argv)
 {
