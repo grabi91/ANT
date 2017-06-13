@@ -142,6 +142,20 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\Atmega2560_Rs232\Atmega2560_Rs232\Debug_MSG\Debug_Msg.c" />
+    <ClCompile Include="..\..\Atmega2560_Rs232\Atmega2560_Rs232\FIFO\Fifo.c" />
+    <ClCompile Include="..\..\Atmega2560_Rs232\Atmega2560_Rs232\Rs232\Rs232.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Main.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\Atmega2560_Rs232\Atmega2560_Rs232\Debug_MSG\Debug_Msg.h" />
+    <ClInclude Include="..\..\Atmega2560_Rs232\Atmega2560_Rs232\FIFO\Fifo.h" />
+    <ClInclude Include="..\..\Atmega2560_Rs232\Atmega2560_Rs232\Rs232\Rs232.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\..\Atmega2560_Rs232\Atmega2560_Rs232\typedef.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
