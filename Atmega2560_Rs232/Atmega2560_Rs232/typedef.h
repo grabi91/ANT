@@ -7,8 +7,8 @@
 #ifndef WIN32
 #include <avr/io.h>
 #include <avr/interrupt.h>
-#endif
 #include <stddef.h>
+#endif
 
 #ifdef WIN32
 #include <stdint.h>

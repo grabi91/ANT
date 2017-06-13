@@ -6,7 +6,10 @@
  */ 
 
 #include "..\typedef.h"
+#ifdef WIN32
+#else
 #include "..\Rs232\RS232.h"
+#endif
 
 #ifndef DEBUG_MSG_H_
 #define DEBUG_MSG_H_

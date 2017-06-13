@@ -21,10 +21,13 @@
     <ClCompile Include="..\..\Atmega2560_Rs232\Atmega2560_Rs232\FIFO\Fifo.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Main.cpp">
+    <ClCompile Include="..\..\Atmega2560_Rs232\Atmega2560_Rs232\Debug_MSG\Debug_Msg.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Atmega2560_Rs232\Atmega2560_Rs232\Debug_MSG\Debug_Msg.c">
+    <ClCompile Include="..\..\Atmega2560_Rs232\Atmega2560_Rs232\Atmega2560_Rs232.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Main.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
