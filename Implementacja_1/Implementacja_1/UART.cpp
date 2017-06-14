@@ -210,7 +210,7 @@ STATUS USART_TransmitByteByFifo(IN UART_ENUM Uart, IN unsigned char data)
 	}
 }
 
-STATUS USART_Transmit(IN UART_ENUM Uart, IN UART_LENGTH UartLength, IN unsigned char *pUartData)
+extern "C" STATUS USART_Transmit(IN UART_ENUM Uart, IN UART_LENGTH UartLength, IN unsigned char *pUartData)
 {
 	int i;
 	STATUS Status;
@@ -234,4 +234,3 @@ STATUS USART_Transmit(IN UART_ENUM Uart, IN UART_LENGTH UartLength, IN unsigned 
 
 	return Status;
 }
-
