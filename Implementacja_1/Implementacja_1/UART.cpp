@@ -25,6 +25,7 @@ private:
 	static SerialPort^ _serialPort;
 	static Thread^ _readThread;
 	static Thread^ _writeThread;
+	static bool _working;
 
 public:
 	static void INIT(uint32_t baud)
@@ -54,6 +55,8 @@ public:
 		_continue = true;
 		_readThread->Start();
 		_writeThread->Start();
+		_working = true;
+		Suspend();
 
 		/*while (_continue)
 		{
@@ -121,27 +124,27 @@ public:
 	{
 		while (_continue)
 		{
-			try
-			{
-				unsigned char data;
-				STATUS Status;
-				
-				Status = ReadFromFifo(INOUT &gUART0FifoOut, OUT &data);
+			unsigned char data;
+			STATUS Status;
+			
+			Status = ReadFromFifo(INOUT &gUART0FifoOut, OUT &data);
 
-				if (STATUS_SUCCESS == Status)
+			if (STATUS_SUCCESS == Status)
+			{
+				//REGISTER_ADRESS_8(UartAddress.UDR) = data;
+				array<unsigned char>^ _buffer = { 0x00 };
+				_buffer[0] = data;
+				try
 				{
-					//REGISTER_ADRESS_8(UartAddress.UDR) = data;
-					array<unsigned char>^ _buffer = { 0x00 };
-					_buffer[0] = data;
 					_serialPort->Write(_buffer, 0, _buffer->Length);
 				}
-				else
-				{
-					//REGISTER_ADRESS_8(UartAddress.UCSRB) &= ~(1 << UDRIE3); //wy³¹cz przerwania pustego bufora nadawania
-					_writeThread->Suspend();
-				}
+				catch (TimeoutException ^) {}
 			}
-			catch (TimeoutException ^) {}
+			else
+			{
+				//REGISTER_ADRESS_8(UartAddress.UCSRB) &= ~(1 << UDRIE3); //wy³¹cz przerwania pustego bufora nadawania
+				Suspend();
+			}			
 		}
 	}
 
@@ -156,7 +159,21 @@ public:
 
 	static void Resume()
 	{
-		_writeThread->Resume();
+		/*if (_working == false)
+		{
+			_writeThread->Resume();
+			_working = true;
+		}*/
+	}
+
+	static void Suspend()
+	{
+		_writeThread->Sleep(10);
+		/*if (_working == true)
+		{
+			_writeThread->Suspend();
+			_working = false;
+		}*/
 	}
 };
 

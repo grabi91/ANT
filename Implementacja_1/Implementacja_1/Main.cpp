@@ -7,6 +7,7 @@ extern "C" {
 
 int main(int argc, char **argv)
 {
+	int a = 0;
 	STATUS Status;
 	unsigned char data[] = { 0xA4, 0x01, 0x4A, 0x00, 0xEF, 0x00, 0x00 };
 	unsigned char dataByte;
@@ -26,6 +27,16 @@ int main(int argc, char **argv)
 		if (STATUS_SUCCESS == Status)
 		{
 			printf("%x\n", dataByte);
+			if (dataByte == 0xEA && a == 0)
+			{
+				a = 1;
+			}
+		}
+
+		if (a == 1)
+		{
+			USART_Transmit(UART0, sizeof(data), data);
+			a = 0;
 		}
 	}
 
