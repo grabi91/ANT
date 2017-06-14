@@ -1,5 +1,6 @@
 extern "C" {
 #include "../../Atmega2560_Rs232/Atmega2560_Rs232/Debug_MSG/Debug_Msg.h"
+#include "../../Atmega2560_Rs232/Atmega2560_Rs232/ANT/ANT_Framer.h"
 }
 
 #include "UART.h"
@@ -9,7 +10,7 @@ int main(int argc, char **argv)
 {
 	int a = 0;
 	STATUS Status;
-	unsigned char data[] = { 0xA4, 0x01, 0x4A, 0x00, 0xEF, 0x00, 0x00 };
+	ANT_MESSAGE_ITEM AntMessage;
 	unsigned char dataByte;
 	USART_Init(IN 57600, IN UART0);
 
@@ -19,11 +20,11 @@ int main(int argc, char **argv)
 	DMsgMessageNewLine(IN 0, IN(unsigned char*)"");
 
 	//USART_TransmitByteByFifo(UART0, data);
-	USART_Transmit(UART0, sizeof(data), data);
+	//USART_Transmit(UART0, sizeof(data), data);
 
 	while (1)
 	{
-		Status = USART_ReadByteFromFifo(UART0, OUT &dataByte);
+		ANT_Framer_GetMessage(&AntMessage);
 		if (STATUS_SUCCESS == Status)
 		{
 			printf("%x\n", dataByte);
@@ -33,11 +34,6 @@ int main(int argc, char **argv)
 			}
 		}
 
-		if (a == 1)
-		{
-			USART_Transmit(UART0, sizeof(data), data);
-			a = 0;
-		}
 	}
 
 	USART_Close(IN UART0);

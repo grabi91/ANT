@@ -190,7 +190,7 @@ void USART_Close(UART_ENUM uart)
 	PortChat::ClosePort();
 }
 
-STATUS USART_ReadByteFromFifo(IN UART_ENUM Uart, OUT unsigned char *pData)
+extern "C" STATUS USART_ReadByteFromFifo(IN UART_ENUM Uart, OUT unsigned char *pData)
 {
 	return ReadFromFifo(INOUT &gUART0FifoIn, IN pData);
 }
