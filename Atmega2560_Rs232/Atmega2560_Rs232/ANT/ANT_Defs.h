@@ -1,10 +1,11 @@
 #ifndef ANT_DEFS_H_
 #define ANT_DEFS_H_
 
-#define ANT_STANDARD_DATA_PAYLOAD_SIZE             ((unsigned char)8)
-#define ANT_EXT_MESG_DEVICE_ID_FIELD_SIZE          ((unsigned char)4)
-#define ANT_EXT_STRING_SIZE                     ((unsigned char)27)             // increase buffer size to support longer messages (32 extra bytes after ANT standard payload)
+#define ANT_STANDARD_DATA_PAYLOAD_SIZE       ((unsigned char)8)
+#define ANT_EXT_MESG_DEVICE_ID_FIELD_SIZE    ((unsigned char)4)
+#define ANT_EXT_STRING_SIZE                  ((unsigned char)27)             // increase buffer size to support longer messages (32 extra bytes after ANT standard payload)
 
+#define MESG_SYNC_OFFSET                     ((unsigned char)0)
 #define MESG_TX_SYNC                         ((unsigned char)0xA4)
 #define MESG_RX_SYNC                         ((unsigned char)0xA5)
 #define MESG_SYNC_SIZE                       ((unsigned char)1)
@@ -14,6 +15,13 @@
 #define MESG_EXT_MESG_BF_SIZE                ((unsigned char)1)  // NOTE: this could increase in the future
 #define MESG_CHECKSUM_SIZE                   ((unsigned char)1)
 #define MESG_DATA_SIZE                       ((unsigned char)9)
+
+#define MESG_SIZE_OFFSET                     (MESG_SYNC_OFFSET + MESG_SYNC_SIZE)
+#define MESG_ID_OFFSET                       (MESG_SIZE_OFFSET + MESG_SIZE_SIZE)
+#define MESG_DATA_OFFSET                     (MESG_ID_OFFSET + MESG_ID_SIZE)
+#define MESG_CHECKSUM_OFFSET(MesgSize)       (MESG_ID_OFFSET + MESG_ID_SIZE + MesgSize)
+
+#define MESG_SIZE_WITH_OUT_PAYLOAD           (MESG_SYNC_SIZE + MESG_SIZE_SIZE + MESG_ID_SIZE + MESG_CHECKSUM_SIZE)
 
 // The largest serial message is an ANT data message with all of the extended fields
 #define MESG_ANT_MAX_PAYLOAD_SIZE            ANT_STANDARD_DATA_PAYLOAD_SIZE

@@ -11,7 +11,7 @@ int main(int argc, char **argv)
 	int a = 0;
 	STATUS Status;
 	ANT_MESSAGE_ITEM AntMessage;
-	unsigned char dataByte;
+	unsigned char dataByte = 0;
 	USART_Init(IN 57600, IN UART0);
 
 	DMsgMessageNewPage(IN 18, IN(unsigned char*)"Poczatek Programu.");
@@ -22,16 +22,15 @@ int main(int argc, char **argv)
 	//USART_TransmitByteByFifo(UART0, data);
 	//USART_Transmit(UART0, sizeof(data), data);
 
+	ANT_Framer_SendMessage(&AntMessage);
+
 	while (1)
 	{
-		ANT_Framer_GetMessage(&AntMessage);
+		Status = ANT_Framer_GetMessage(&AntMessage);
 		if (STATUS_SUCCESS == Status)
 		{
 			printf("%x\n", dataByte);
-			if (dataByte == 0xEA && a == 0)
-			{
-				a = 1;
-			}
+			ANT_Framer_SendMessage(&AntMessage);
 		}
 
 	}

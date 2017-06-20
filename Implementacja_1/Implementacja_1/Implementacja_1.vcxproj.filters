@@ -56,5 +56,8 @@
     <ClInclude Include="..\..\Atmega2560_Rs232\Atmega2560_Rs232\ANT\ANT_Framer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Atmega2560_Rs232\Atmega2560_Rs232\ANT\ANT_Defs.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

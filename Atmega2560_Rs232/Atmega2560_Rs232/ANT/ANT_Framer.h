@@ -1,21 +1,44 @@
 #ifndef ANT_FRAMER_H_
 #define ANT_FRAMER_H_
 
+#include "../typedef.h"
 #include "ANT_Defs.h"
 
-typedef struct ANT_MESSAGE
+typedef enum _ANT_FRAMER_MESSAGE_STATUS
 {
-	unsigned char ucMessageID;
-	unsigned char aucData[MESG_MAX_SIZE_VALUE];
+	ANT_FMS_NOT_READY,
+	ANT_FMS_READY,
+	ANT_FMS_READ_OUT,
+	ANT_FMS_LIMIT,
+} ANT_FRAMER_MESSAGE_STATUS;
+
+typedef struct _ANT_MESSAGE
+{
+	unsigned char MessageID;
+	unsigned char Data[MESG_MAX_SIZE_VALUE];
 } ANT_MESSAGE;
 
-typedef struct
+typedef struct _ANT_MESSAGE_ITEM
 {
-	unsigned char ucSize;
-	ANT_MESSAGE stANTMessage;
+	unsigned char Size;
+	ANT_MESSAGE AntMessage;
 } ANT_MESSAGE_ITEM;
 
-STATUS ANT_Framer_GetMessage(ANT_MESSAGE_ITEM* pAntMessage);
+typedef struct _ANT_MESSAGE_FRAMER
+{
+	ANT_MESSAGE_ITEM AntItem;
+	unsigned char ReadPointer;
+	unsigned char ChechSumPartValue;
+} ANT_MESSAGE_FRAMER;
+
+typedef struct _ANT_MESSAGE_CONTEXT
+{
+	ANT_MESSAGE_FRAMER AntFramer;
+	ANT_FRAMER_MESSAGE_STATUS MessageReady;
+} ANT_MESSAGE_CONTEXT;
+
+STATUS ANT_Framer_GetMessage(ANT_MESSAGE_ITEM *pAntMessage);
+STATUS ANT_Framer_SendMessage(ANT_MESSAGE_ITEM* pAntMessage);
 
 
 #endif

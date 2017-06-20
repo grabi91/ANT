@@ -168,6 +168,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\Atmega2560_Rs232\Atmega2560_Rs232\ANT\ANT_Defs.h" />
     <ClInclude Include="..\..\Atmega2560_Rs232\Atmega2560_Rs232\ANT\ANT_Framer.h" />
     <ClInclude Include="..\..\Atmega2560_Rs232\Atmega2560_Rs232\Debug_MSG\Debug_Msg.h" />
     <ClInclude Include="..\..\Atmega2560_Rs232\Atmega2560_Rs232\FIFO\Fifo.h" />
