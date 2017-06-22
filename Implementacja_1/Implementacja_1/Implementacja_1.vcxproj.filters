@@ -36,6 +36,12 @@
     <ClCompile Include="..\..\Atmega2560_Rs232\Atmega2560_Rs232\ANT\ANT_Framer.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Atmega2560_Rs232\Atmega2560_Rs232\ANT\ANT_Message_Queue.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Atmega2560_Rs232\Atmega2560_Rs232\ADC\ADC.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Atmega2560_Rs232\Atmega2560_Rs232\FIFO\Fifo.h">
@@ -57,6 +63,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Atmega2560_Rs232\Atmega2560_Rs232\ANT\ANT_Defs.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Atmega2560_Rs232\Atmega2560_Rs232\ANT\ANT_Message_Defs.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Atmega2560_Rs232\Atmega2560_Rs232\ANT\ANT_Message_Queue.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

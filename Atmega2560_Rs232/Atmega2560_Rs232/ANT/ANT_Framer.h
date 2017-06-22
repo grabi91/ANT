@@ -40,5 +40,10 @@ typedef struct _ANT_MESSAGE_CONTEXT
 STATUS ANT_Framer_GetMessage(ANT_MESSAGE_ITEM *pAntMessage);
 STATUS ANT_Framer_SendMessage(ANT_MESSAGE_ITEM* pAntMessage);
 
+//////////////////////////////////////////////
+// Message Definitions
+//////////////////////////////////////////////
+STATUS ANT_Framer_Mesg_ResetSystem();
+STATUS ANT_Framer_Mesg_SetNetworkKey(unsigned char NetworkNumber, unsigned char *pKey, unsigned char KeySize);
 
 #endif

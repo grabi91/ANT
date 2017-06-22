@@ -16,8 +16,8 @@
 
 typedef uint8_t DMsg_LENGTH;
 
-#define DEBUG_MSG	
-#define UART_DMsg	UART3
+#define DEBUG_MSG
+#define UART_DMsg    UART3
 
 STATUS DMsgMessage(IN DMsg_LENGTH MessageLength, IN unsigned char *pMessage);
 STATUS DMsgMessageNewPage(IN DMsg_LENGTH MessageLength, IN unsigned char *pMessage);

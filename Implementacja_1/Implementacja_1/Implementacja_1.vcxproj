@@ -143,7 +143,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\Atmega2560_Rs232\Atmega2560_Rs232\ADC\ADC.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="..\..\Atmega2560_Rs232\Atmega2560_Rs232\ANT\ANT_Framer.c" />
+    <ClCompile Include="..\..\Atmega2560_Rs232\Atmega2560_Rs232\ANT\ANT_Message_Queue.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="..\..\Atmega2560_Rs232\Atmega2560_Rs232\Atmega2560_Rs232.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </ClCompile>
@@ -170,6 +176,8 @@
   <ItemGroup>
     <ClInclude Include="..\..\Atmega2560_Rs232\Atmega2560_Rs232\ANT\ANT_Defs.h" />
     <ClInclude Include="..\..\Atmega2560_Rs232\Atmega2560_Rs232\ANT\ANT_Framer.h" />
+    <ClInclude Include="..\..\Atmega2560_Rs232\Atmega2560_Rs232\ANT\ANT_Message_Defs.h" />
+    <ClInclude Include="..\..\Atmega2560_Rs232\Atmega2560_Rs232\ANT\ANT_Message_Queue.h" />
     <ClInclude Include="..\..\Atmega2560_Rs232\Atmega2560_Rs232\Debug_MSG\Debug_Msg.h" />
     <ClInclude Include="..\..\Atmega2560_Rs232\Atmega2560_Rs232\FIFO\Fifo.h" />
     <ClInclude Include="..\..\Atmega2560_Rs232\Atmega2560_Rs232\Rs232\Rs232.h">

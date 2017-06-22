@@ -83,10 +83,32 @@ STATUS ANT_Framer_CheckNewByte()
 
 STATUS ANT_Framer_SendMessage(ANT_MESSAGE_ITEM* pAntMessage)
 {
-	STATUS Status = STATUS_SUCCESS;
-	unsigned char data[] = { 0xA4, 0x01, 0x4A, 0x00, 0xEF, 0x00, 0x00 };
+	STATUS Status = STATUS_FAILURE;
+	//unsigned char data[] = { 0xA4, 0x01, 0x4A, 0x00, 0xEF, 0x00, 0x00 };
+	unsigned char DataToSend[MESG_MAX_SIZE_VALUE]; //TODO change buffer size
+	unsigned char DataSize = 0;
 
-	USART_Transmit(UART0, sizeof(data), data);
+	DataToSend[DataSize] = MESG_TX_SYNC;
+	DataSize++;
+
+	DataToSend[DataSize] = pAntMessage->Size;
+	DataSize++;
+
+	DataToSend[DataSize] = pAntMessage->AntMessage.MessageID;
+	DataSize++;
+
+	memcpy(&DataToSend[DataSize], pAntMessage->AntMessage.Data, pAntMessage->Size);
+	DataSize += pAntMessage->Size;
+
+	DataToSend[DataSize] = ANT_Framer_CheckSum_Calc8(DataToSend, DataSize, 0);
+	DataSize++;
+
+	DataToSend[DataSize] = 0;
+	DataSize++;
+	DataToSend[DataSize] = 0;
+	DataSize++;
+
+	Status = USART_Transmit(UART0, DataSize, DataToSend);
 
 	return Status;
 }
@@ -104,4 +126,36 @@ STATUS ANT_Framer_GetMessage(ANT_MESSAGE_ITEM* pAntMessage)
 	}
 
 	return Status;
+}
+
+//////////////////////////////////////////////
+// Message Definitions
+//////////////////////////////////////////////
+STATUS ANT_Framer_Mesg_ResetSystem()
+{
+   STATUS Status = STATUS_FAILURE;
+   ANT_MESSAGE_ITEM AntMessage;
+
+   AntMessage.AntMessage.MessageID = MESG_SYSTEM_RESET_ID;
+   AntMessage.AntMessage.Data[0] = 0;
+   AntMessage.Size = MESG_SYSTEM_RESET_SIZE;
+
+   Status = ANT_Framer_SendMessage(&AntMessage);
+
+   return Status;
+}
+
+STATUS ANT_Framer_Mesg_SetNetworkKey(unsigned char NetworkNumber, unsigned char *pKey, unsigned char KeySize)
+{
+   STATUS Status = STATUS_FAILURE;
+   ANT_MESSAGE_ITEM AntMessage;
+
+   AntMessage.AntMessage.MessageID = MESG_NETWORK_KEY_ID;
+   AntMessage.AntMessage.Data[0] = NetworkNumber;
+   memcpy(&AntMessage.AntMessage.Data[1], pKey, KeySize);
+   AntMessage.Size = MESG_NETWORK_KEY_SIZE;
+
+   Status = ANT_Framer_SendMessage(&AntMessage);
+
+   return Status;
 }
