@@ -45,5 +45,11 @@ STATUS ANT_Framer_SendMessage(ANT_MESSAGE_ITEM* pAntMessage);
 //////////////////////////////////////////////
 STATUS ANT_Framer_Mesg_ResetSystem();
 STATUS ANT_Framer_Mesg_SetNetworkKey(unsigned char NetworkNumber, unsigned char *pKey, unsigned char KeySize);
+STATUS ANT_Framer_Mesg_AssignChannel(unsigned char AntChannel, unsigned char ChannelType, unsigned char NetworkNumber);
+STATUS ANT_Framer_Mesg_SetChannelID(unsigned char AntChannel, unsigned short DeviceNumber, unsigned char DeviceType, unsigned char TransmitType);
+STATUS ANT_Framer_Mesg_SetChannelRFFrequency(unsigned char AntChannel, unsigned char RFFrequency);
+STATUS ANT_Framer_Mesg_OpenChannel(unsigned char AntChannel);
+STATUS ANT_Framer_Mesg_RxExtMesgsEnable(unsigned char Enable);
+STATUS ANT_Framer_Mesg_SendBroadcastData(unsigned char AntChannel, unsigned char *pData);
 
 #endif

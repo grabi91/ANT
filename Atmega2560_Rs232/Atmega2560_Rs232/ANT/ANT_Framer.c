@@ -159,3 +159,96 @@ STATUS ANT_Framer_Mesg_SetNetworkKey(unsigned char NetworkNumber, unsigned char 
 
    return Status;
 }
+
+STATUS ANT_Framer_Mesg_AssignChannel(unsigned char AntChannel, unsigned char ChannelType, unsigned char NetworkNumber)
+{
+   STATUS Status = STATUS_FAILURE;
+   ANT_MESSAGE_ITEM AntMessage;
+
+   AntMessage.AntMessage.MessageID = MESG_ASSIGN_CHANNEL_ID;
+   AntMessage.AntMessage.Data[0] = AntChannel;
+   AntMessage.AntMessage.Data[1] = ChannelType;
+   AntMessage.AntMessage.Data[2] = NetworkNumber;
+   AntMessage.Size = MESG_ASSIGN_CHANNEL_SIZE;
+
+   Status = ANT_Framer_SendMessage(&AntMessage);
+
+   return Status;
+}
+
+STATUS ANT_Framer_Mesg_SetChannelID(unsigned char AntChannel, unsigned short DeviceNumber, unsigned char DeviceType, unsigned char TransmitType)
+{
+   STATUS Status = STATUS_FAILURE;
+   ANT_MESSAGE_ITEM AntMessage;
+
+   AntMessage.AntMessage.MessageID = MESG_CHANNEL_ID_ID;
+   AntMessage.AntMessage.Data[0] = AntChannel;
+   AntMessage.AntMessage.Data[1] = (DeviceNumber & 0xFF);
+   AntMessage.AntMessage.Data[2] = ((DeviceNumber >> 8) & 0xFF);
+   AntMessage.AntMessage.Data[3] = DeviceType;
+   AntMessage.AntMessage.Data[4] = TransmitType;
+   AntMessage.Size = MESG_CHANNEL_ID_SIZE;
+
+   Status = ANT_Framer_SendMessage(&AntMessage);
+
+   return Status;
+}
+
+STATUS ANT_Framer_Mesg_SetChannelRFFrequency(unsigned char AntChannel, unsigned char RFFrequency)
+{
+   STATUS Status = STATUS_FAILURE;
+   ANT_MESSAGE_ITEM AntMessage;
+
+   AntMessage.AntMessage.MessageID = MESG_CHANNEL_RADIO_FREQ_ID;
+   AntMessage.AntMessage.Data[0] = AntChannel;
+   AntMessage.AntMessage.Data[1] = RFFrequency;
+   AntMessage.Size = MESG_CHANNEL_RADIO_FREQ_SIZE;
+
+   Status = ANT_Framer_SendMessage(&AntMessage);
+
+   return Status;
+}
+
+STATUS ANT_Framer_Mesg_OpenChannel(unsigned char AntChannel)
+{
+   STATUS Status = STATUS_FAILURE;
+   ANT_MESSAGE_ITEM AntMessage;
+
+   AntMessage.AntMessage.MessageID = MESG_OPEN_CHANNEL_ID;
+   AntMessage.AntMessage.Data[0] = AntChannel;
+   AntMessage.Size = MESG_OPEN_CHANNEL_SIZE;
+
+   Status = ANT_Framer_SendMessage(&AntMessage);
+
+   return Status;
+}
+
+STATUS ANT_Framer_Mesg_RxExtMesgsEnable(unsigned char Enable)
+{
+   STATUS Status = STATUS_FAILURE;
+   ANT_MESSAGE_ITEM AntMessage;
+
+   AntMessage.AntMessage.MessageID = MESG_RX_EXT_MESGS_ENABLE_ID;
+   AntMessage.AntMessage.Data[0] = 0;
+   AntMessage.AntMessage.Data[1] = Enable;
+   AntMessage.Size = MESG_RX_EXT_MESGS_ENABLE_SIZE;
+
+   Status = ANT_Framer_SendMessage(&AntMessage);
+
+   return Status;
+}
+
+STATUS ANT_Framer_Mesg_SendBroadcastData(unsigned char AntChannel, unsigned char *pData)
+{
+   STATUS Status = STATUS_FAILURE;
+   ANT_MESSAGE_ITEM AntMessage;
+
+   AntMessage.AntMessage.MessageID = MESG_BROADCAST_DATA_ID;
+   AntMessage.AntMessage.Data[0] = AntChannel;
+   memcpy(&AntMessage.AntMessage.Data[1], pData, ANT_STANDARD_DATA_PAYLOAD_SIZE);
+   AntMessage.Size = ANT_STANDARD_DATA_PAYLOAD_SIZE + MESG_CHANNEL_NUM_SIZE;
+
+   Status = ANT_Framer_SendMessage(&AntMessage);
+
+   return Status;
+}
