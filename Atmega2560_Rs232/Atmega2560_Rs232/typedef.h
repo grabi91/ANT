@@ -12,6 +12,7 @@
 
 #ifdef WIN32
 #include <stdint.h>
+#include <stdio.h>
 #endif
 
 #ifndef TYPEDEF_H_
@@ -28,10 +29,13 @@
 //#define STATUS_FAILURE 1
 
 typedef enum _STATUS{
-	STATUS_SUCCESS,
-	STATUS_FAILURE,
-	STATUS_NDEF_DMsg,
+   STATUS_SUCCESS,
+   STATUS_FAILURE,
+   STATUS_NDEF_DMsg,
    STATUS_MESSEGE_FUNCTION_NOT_DEFINE,
+   STATUS_MESSEGE_FUNCTION_ALREADY_DEFINE,
+   STATUS_DATA_BUFFER_TO_SHORT,
+   STATUS_PAGE_UNSUPPORTED,
 } STATUS;
 
 #ifdef WIN32
@@ -53,6 +57,12 @@ typedef enum _STATUS{
 #define USER_NETWORK_KEY      {0xB9, 0xA5, 0x21, 0xFB, 0xBD, 0x72, 0xC3, 0x45}
 #define USER_NETWORK_KEY_SIZE (8)
 #define USER_NETWORK_NUM      (0)      // The network key is assigned to this network number
+
+#define BYTE_MASK 0x00FF
+#define UPPER_BYTE_MASK 0xFF00
+#define UNIBBLE_UBYTE_SIGNXTND 0xF000
+#define UPPER_NIBBLE_MASK 0xF0
+#define LOWER_NIBBLE_MASK 0x0F
 
 #endif /* TYPEDEF_H_ */
 

@@ -1,12 +1,7 @@
 #include "ANT_Message_Queue.h"
-#include "ANT_Framer.h"
 #include "../Debug_MSG/Debug_Msg.h"
 
-#define ANT_MESG_Q_PP_TABLE_FUNC_TEMPLATE(Name) STATUS Name(ANT_MESSAGE_ITEM* pAntMessage)
-
 #define ANT_MESG_Q_PP_TABLE_SIZE 0xFF
-
-typedef ANT_MESG_Q_PP_TABLE_FUNC_TEMPLATE((*ANT_PayloadFunction));
 
 ANT_PayloadFunction ANT_Mesg_Q_ProcessPayload_Table[ANT_MESG_Q_PP_TABLE_SIZE];
 
@@ -20,7 +15,6 @@ ANT_MESG_Q_PP_TABLE_FUNC_TEMPLATE(ANT_Mesg_Q_PP_SetChannelID);
 ANT_MESG_Q_PP_TABLE_FUNC_TEMPLATE(ANT_Mesg_Q_PP_SetChannelRFFrequency);
 ANT_MESG_Q_PP_TABLE_FUNC_TEMPLATE(ANT_Mesg_Q_PP_OpenChannel);
 ANT_MESG_Q_PP_TABLE_FUNC_TEMPLATE(ANT_Mesg_Q_PP_RxExtMesgsEnable);
-ANT_MESG_Q_PP_TABLE_FUNC_TEMPLATE(ANT_Mesg_Q_PP_EventTx);
 
 STATUS ANT_Mesg_Q_Init()
 {
@@ -35,7 +29,26 @@ STATUS ANT_Mesg_Q_Init()
    ANT_Mesg_Q_ProcessPayload_Table[MESG_CHANNEL_RADIO_FREQ_ID] = ANT_Mesg_Q_PP_SetChannelRFFrequency;
    ANT_Mesg_Q_ProcessPayload_Table[MESG_OPEN_CHANNEL_ID] = ANT_Mesg_Q_PP_OpenChannel;
    ANT_Mesg_Q_ProcessPayload_Table[MESG_RX_EXT_MESGS_ENABLE_ID] = ANT_Mesg_Q_PP_RxExtMesgsEnable;
-   ANT_Mesg_Q_ProcessPayload_Table[EVENT_TX] = ANT_Mesg_Q_PP_EventTx;
+
+   return Status;
+}
+
+STATUS ANT_Mesg_Q_RegisterMesgEvent(uint8_t MesgEventId, ANT_PayloadFunction FunctionPointer, ANT_MESG_Q_REG_OPTION ForceRegister)
+{
+   STATUS Status = STATUS_SUCCESS;
+
+   if (ForceRegister == ANT_M_Q_R_STANDARD)
+   {
+      if (ANT_Mesg_Q_ProcessPayload_Table[MesgEventId] != 0)
+      {
+         Status = STATUS_MESSEGE_FUNCTION_ALREADY_DEFINE;
+      }
+   }
+
+   if (Status == STATUS_SUCCESS)
+   {
+      ANT_Mesg_Q_ProcessPayload_Table[MesgEventId] = FunctionPointer;
+   }
 
    return Status;
 }
@@ -55,6 +68,8 @@ STATUS ANT_Mesg_Q_ProcessPayload(ANT_MESSAGE_ITEM* pAntMessage)
 
    return Status;
 }
+
+
 
 ANT_MESG_Q_PP_TABLE_FUNC_TEMPLATE(ANT_Mesg_Q_PP_StartUp)
 {
@@ -221,7 +236,7 @@ ANT_MESG_Q_PP_TABLE_FUNC_TEMPLATE(ANT_Mesg_Q_PP_RxExtMesgsEnable)
 {
    STATUS Status = STATUS_SUCCESS;
 
-   if (pAntMessage->AntMessage.Data[2] != INVALID_MESSAGE)
+   if (pAntMessage->AntMessage.Data[2] == INVALID_MESSAGE)
    {
       DMsgMessageNewLine(52, "Extended messages not supported in this ANT product");
       Status = STATUS_FAILURE;
@@ -235,15 +250,6 @@ ANT_MESG_Q_PP_TABLE_FUNC_TEMPLATE(ANT_Mesg_Q_PP_RxExtMesgsEnable)
    {
       DMsgMessageNewLine(27, "Extended messages enabled.");
    }
-
-   return Status;
-}
-
-ANT_MESG_Q_PP_TABLE_FUNC_TEMPLATE(ANT_Mesg_Q_PP_EventTx)
-{
-   STATUS Status = STATUS_SUCCESS;
-
-   DMsgMessageNewLine(8, "EventTx");
 
    return Status;
 }

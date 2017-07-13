@@ -2,6 +2,7 @@ extern "C" {
 #include "../../Atmega2560_Rs232/Atmega2560_Rs232/Debug_MSG/Debug_Msg.h"
 #include "../../Atmega2560_Rs232/Atmega2560_Rs232/ANT/ANT_Framer.h"
 #include "../../Atmega2560_Rs232/Atmega2560_Rs232/ANT/ANT_Message_Queue.h"
+#include "../../Atmega2560_Rs232/Atmega2560_Rs232/TemperatureSensor/TemperatureSensor.h"
 }
 
 #include "UART.h"
@@ -39,6 +40,8 @@ int main(int argc, char **argv)
    USART_Init(IN 57600, IN UART0);
 
    Status = ANT_Init();
+
+   Status = TemperatureSensorInit();
 
    while (1)
    {

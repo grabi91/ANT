@@ -110,6 +110,9 @@
 #define EVENT_NEW_CHANNEL                          0x81           // INTERNAL: EVENT for a new active channel
 #define EVENT_PASS_THRU                            0x82           // INTERNAL: Event to allow an upper stack events to pass through lower stacks
 
+#define EVENT_RX_BROADCAST                         0x9A           // returned when module receives broadcast data
+#define EVENT_RX_ACKNOWLEDGED                      0x9B           // returned when module receives acknowledged data
+
 #define EVENT_BLOCKED                              0xFF           // INTERNAL: Event to replace any event we do not wish to go out, will also zero the size of the Tx message
 
 
