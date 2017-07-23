@@ -38,7 +38,7 @@ STATUS ANT_Framer_CheckNewByte()
 
 	if (ANT_Framer_Context.MessageReady == ANT_FMS_NOT_READY)
 	{
-		UsartStatus = USART_ReadByteFromFifo(UART0, OUT &dataByte);
+		UsartStatus = USART_ReadByteFromFifo(UART2, OUT &dataByte);
 		if (UsartStatus == STATUS_SUCCESS)
 		{
 			if (ANT_Framer_Context.AntFramer.ReadPointer == MESG_SYNC_OFFSET)
@@ -108,7 +108,7 @@ STATUS ANT_Framer_SendMessage(ANT_MESSAGE_ITEM* pAntMessage)
 	DataToSend[DataSize] = 0;
 	DataSize++;
 
-	Status = USART_Transmit(UART0, DataSize, DataToSend);
+	Status = USART_Transmit(UART2, DataSize, DataToSend);
 
 	return Status;
 }
@@ -188,6 +188,22 @@ STATUS ANT_Framer_Mesg_SetChannelID(unsigned char AntChannel, unsigned short Dev
    AntMessage.AntMessage.Data[3] = DeviceType;
    AntMessage.AntMessage.Data[4] = TransmitType;
    AntMessage.Size = MESG_CHANNEL_ID_SIZE;
+
+   Status = ANT_Framer_SendMessage(&AntMessage);
+
+   return Status;
+}
+
+STATUS ANT_Framer_Mesg_SetChannelPeriod(unsigned char AntChannel, unsigned short ChannelPeriod)
+{
+   STATUS Status = STATUS_FAILURE;
+   ANT_MESSAGE_ITEM AntMessage;
+
+   AntMessage.AntMessage.MessageID = MESG_CHANNEL_MESG_PERIOD_ID;
+   AntMessage.AntMessage.Data[0] = AntChannel;
+   AntMessage.AntMessage.Data[1] = (ChannelPeriod & 0xFF);
+   AntMessage.AntMessage.Data[2] = ((ChannelPeriod >> 8) & 0xFF);
+   AntMessage.Size = MESG_CHANNEL_MESG_PERIOD_SIZE;
 
    Status = ANT_Framer_SendMessage(&AntMessage);
 

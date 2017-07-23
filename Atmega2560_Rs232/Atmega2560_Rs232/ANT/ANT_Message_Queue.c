@@ -12,6 +12,7 @@ ANT_MESG_Q_PP_TABLE_FUNC_TEMPLATE(ANT_Mesg_Q_PP_ResponseEvent);
 ANT_MESG_Q_PP_TABLE_FUNC_TEMPLATE(ANT_Mesg_Q_PP_NetworkKey);
 ANT_MESG_Q_PP_TABLE_FUNC_TEMPLATE(ANT_Mesg_Q_PP_AssignChannel);
 ANT_MESG_Q_PP_TABLE_FUNC_TEMPLATE(ANT_Mesg_Q_PP_SetChannelID);
+ANT_MESG_Q_PP_TABLE_FUNC_TEMPLATE(ANT_Mesg_Q_PP_SetChannelPeriod);
 ANT_MESG_Q_PP_TABLE_FUNC_TEMPLATE(ANT_Mesg_Q_PP_SetChannelRFFrequency);
 ANT_MESG_Q_PP_TABLE_FUNC_TEMPLATE(ANT_Mesg_Q_PP_OpenChannel);
 ANT_MESG_Q_PP_TABLE_FUNC_TEMPLATE(ANT_Mesg_Q_PP_RxExtMesgsEnable);
@@ -26,6 +27,7 @@ STATUS ANT_Mesg_Q_Init()
    ANT_Mesg_Q_ProcessPayload_Table[MESG_NETWORK_KEY_ID] = ANT_Mesg_Q_PP_NetworkKey;
    ANT_Mesg_Q_ProcessPayload_Table[MESG_ASSIGN_CHANNEL_ID] = ANT_Mesg_Q_PP_AssignChannel;
    ANT_Mesg_Q_ProcessPayload_Table[MESG_CHANNEL_ID_ID] = ANT_Mesg_Q_PP_SetChannelID;
+   ANT_Mesg_Q_ProcessPayload_Table[MESG_CHANNEL_MESG_PERIOD_ID] = ANT_Mesg_Q_PP_SetChannelPeriod;
    ANT_Mesg_Q_ProcessPayload_Table[MESG_CHANNEL_RADIO_FREQ_ID] = ANT_Mesg_Q_PP_SetChannelRFFrequency;
    ANT_Mesg_Q_ProcessPayload_Table[MESG_OPEN_CHANNEL_ID] = ANT_Mesg_Q_PP_OpenChannel;
    ANT_Mesg_Q_ProcessPayload_Table[MESG_RX_EXT_MESGS_ENABLE_ID] = ANT_Mesg_Q_PP_RxExtMesgsEnable;
@@ -184,6 +186,26 @@ ANT_MESG_Q_PP_TABLE_FUNC_TEMPLATE(ANT_Mesg_Q_PP_SetChannelID)
    else
    {
       DMsgMessageNewLine(16, "Channel Id set.");
+      DMsgMessageNewLine(27, "Setting Channel Period...");
+
+      Status = ANT_Framer_Mesg_SetChannelPeriod(USER_ANTCHANNEL, USER_CHANNEL_PERIOD);
+   }
+
+   return Status;
+}
+
+ANT_MESG_Q_PP_TABLE_FUNC_TEMPLATE(ANT_Mesg_Q_PP_SetChannelPeriod)
+{
+   STATUS Status = STATUS_SUCCESS;
+
+   if (pAntMessage->AntMessage.Data[2] != RESPONSE_NO_ERROR)
+   {
+      DMsgMessageNewLine(32, "Error setting channel period: Code ");
+      Status = STATUS_FAILURE;
+   }
+   else
+   {
+      DMsgMessageNewLine(16, "Channel Period set.");
       DMsgMessageNewLine(27, "Setting Radio Frequency...");
 
       Status = ANT_Framer_Mesg_SetChannelRFFrequency(USER_ANTCHANNEL, USER_RADIOFREQ);
@@ -226,7 +248,7 @@ ANT_MESG_Q_PP_TABLE_FUNC_TEMPLATE(ANT_Mesg_Q_PP_OpenChannel)
       DMsgMessageNewLine(18, "Channel open.");
       DMsgMessageNewLine(19, "Enabling extended message...");
 
-      Status = ANT_Framer_Mesg_RxExtMesgsEnable(1);
+      //Status = ANT_Framer_Mesg_RxExtMesgsEnable(1);
    }
 
    return Status;

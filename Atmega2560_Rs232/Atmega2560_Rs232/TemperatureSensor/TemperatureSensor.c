@@ -1,5 +1,6 @@
 #include "../ANT/ANT_Message_Queue.h"
 #include "../Debug_MSG/Debug_Msg.h"
+#include "../ADC/ADC.h"
 #include "TemperatureSensor.h"
 
 #define RESERVED 0xFF
@@ -270,6 +271,20 @@ STATUS DecodeData(uint8_t *pData, uint8_t DataLength)
    return Status;
 }
 
+STATUS UpdateTemperature()
+{
+   STATUS Status = STATUS_FAILURE;
+   ADC_RESPONSE adc_value;
+   char message[20];
+   ADC_Read(IN 8, OUT &adc_value);
+   
+   sprintf(message, "Wartosc = %d", adc_value);
+   
+   DMsgMessageNewLine(IN 20, IN message);
+
+   return Status;
+}
+
 ANT_MESG_Q_PP_TABLE_FUNC_TEMPLATE(HandleTransmit)
 {
    STATUS Status = STATUS_SUCCESS;
@@ -345,6 +360,8 @@ ANT_MESG_Q_PP_TABLE_FUNC_TEMPLATE(HandleTransmit)
       TemperatureData.EventCount++;
       TemperatureData.BackgroundDataPage.CountSinceLast++;
    }
+
+   UpdateTemperature();
 
    return Status;
 }

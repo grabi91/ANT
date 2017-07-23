@@ -58,6 +58,10 @@ typedef enum _STATUS{
 #define USER_NETWORK_KEY_SIZE (8)
 #define USER_NETWORK_NUM      (0)      // The network key is assigned to this network number
 
+#define CHANNEL_PERIOD_4KHZ   (8192)
+#define CHANNEL_PERIOD_05KHZ  (65535)
+#define USER_CHANNEL_PERIOD   (CHANNEL_PERIOD_4KHZ)
+
 #define BYTE_MASK 0x00FF
 #define UPPER_BYTE_MASK 0xFF00
 #define UNIBBLE_UBYTE_SIGNXTND 0xF000
