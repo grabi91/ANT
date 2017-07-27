@@ -81,6 +81,13 @@ enum _SUPPORTED_PAGES
    SUPPORTED_PAGES_0_1 = 0x03,
 } SUPPORTED_PAGES;
 
+typedef enum _TEMPERATURE_DATA_SWITCH
+{
+   SWITCH_0,
+   SWITCH_1,
+   SWTICH_LIMIT,
+} TEMPERATURE_DATA_SWITCH;
+
 typedef struct _TEMPERATURE_DATA
 {
    int16_t Low24h;                  //Signed Integer representing the lowest temperature recorded over 
@@ -123,7 +130,8 @@ typedef struct _TEMPERATURE_SENSOR_DATA_CONTEXT
                                     //Bit 1 – Page 1 Support
                                     //Bit 0 – Page 0 Support
    uint8_t EventCount;
-   TEMPERATURE_DATA Temperature;
+   TEMPERATURE_DATA_SWITCH TemperatureSwitch;
+   TEMPERATURE_DATA Temperature[SWTICH_LIMIT];
    MANUFACTURER_IDENTIFICATION ManufacturerInformation;
    PRODUCT_INFORMATION ProductInformation;
 } TEMPERATURE_SENSOR_DATA_CONTEXT;
@@ -155,10 +163,14 @@ STATUS TemperatureSensorInit()
    TemperatureData.SupportedMainDataPages = SUPPORTED_PAGES_0_1;
 
    TemperatureData.EventCount = 0;
-
-   TemperatureData.Temperature.Current = INVALID_TEMPERATURE;
-   TemperatureData.Temperature.Low24h = INVALID_24H_TEMPERATURE;
-   TemperatureData.Temperature.High24h = INVALID_24H_TEMPERATURE;
+   
+   TemperatureData.TemperatureSwitch = SWITCH_0;
+   for(TEMPERATURE_DATA_SWITCH i = SWITCH_0; i < SWTICH_LIMIT; i++)
+   {
+      TemperatureData.Temperature[i].Current = INVALID_TEMPERATURE;
+      TemperatureData.Temperature[i].Low24h = INVALID_24H_TEMPERATURE;
+      TemperatureData.Temperature[i].High24h = INVALID_24H_TEMPERATURE;  
+   }
 
    TemperatureData.ManufacturerInformation.HWRevision = 0x01;
    TemperatureData.ManufacturerInformation.ManufacturerId = 0x0002;
@@ -173,6 +185,7 @@ STATUS TemperatureSensorInit()
 STATUS EncodeData(T_S_PAGE Page, uint8_t *pData, uint8_t DataLength)
 {
    STATUS Status = STATUS_SUCCESS;
+   TEMPERATURE_DATA_SWITCH SwithTmp = TemperatureData.TemperatureSwitch;
 
    if (DataLength < MESG_ANT_MAX_PAYLOAD_SIZE)
    {
@@ -197,12 +210,12 @@ STATUS EncodeData(T_S_PAGE Page, uint8_t *pData, uint8_t DataLength)
          pData[0] = Page;
          pData[1] = RESERVED;
          pData[2] = TemperatureData.EventCount;
-         pData[3] = TemperatureData.Temperature.Low24h & BYTE_MASK;
-         pData[4] = (TemperatureData.Temperature.Low24h >> 4) & UPPER_NIBBLE_MASK;
-         pData[4] = pData[4] | (TemperatureData.Temperature.High24h & LOWER_NIBBLE_MASK);
-         pData[5] = (TemperatureData.Temperature.High24h >> 4) & BYTE_MASK;
-         pData[6] = TemperatureData.Temperature.Current & BYTE_MASK;
-         pData[7] = (TemperatureData.Temperature.Current >> 8) & BYTE_MASK;
+         pData[3] = TemperatureData.Temperature[SwithTmp].Low24h & BYTE_MASK;
+         pData[4] = (TemperatureData.Temperature[SwithTmp].Low24h >> 4) & UPPER_NIBBLE_MASK;
+         pData[4] = pData[4] | (TemperatureData.Temperature[SwithTmp].High24h & LOWER_NIBBLE_MASK);
+         pData[5] = (TemperatureData.Temperature[SwithTmp].High24h >> 4) & BYTE_MASK;
+         pData[6] = TemperatureData.Temperature[SwithTmp].Current & BYTE_MASK;
+         pData[7] = (TemperatureData.Temperature[SwithTmp].Current >> 8) & BYTE_MASK;
          break;
       case PAGE_80:
          pData[0] = Page;
@@ -271,16 +284,88 @@ STATUS DecodeData(uint8_t *pData, uint8_t DataLength)
    return Status;
 }
 
+void UpdateCurrentTemperature(int16_t Temperature)
+{
+   switch (TemperatureData.TemperatureSwitch)
+   {
+      case SWITCH_0:
+         TemperatureData.Temperature[SWITCH_1].Current = Temperature;
+         break;
+      case SWITCH_1:
+         TemperatureData.Temperature[SWITCH_0].Current = Temperature;
+         break;
+   }
+}
+
+void UpdateMaxMinTemperature(int16_t Temperature)
+{
+   int16_t TemperatureHigh = TemperatureData.Temperature[TemperatureData.TemperatureSwitch].High24h;
+   int16_t TemperatureLow = TemperatureData.Temperature[TemperatureData.TemperatureSwitch].Low24h;
+   
+   if((TemperatureHigh == INVALID_24H_TEMPERATURE) || (TemperatureHigh < Temperature))
+   {
+      TemperatureHigh = Temperature;
+   }
+   
+   if((TemperatureLow == INVALID_24H_TEMPERATURE) || (TemperatureLow > Temperature))
+   {
+      TemperatureLow = Temperature;
+   }
+   
+   switch (TemperatureData.TemperatureSwitch)
+   {
+      case SWITCH_0:
+         TemperatureData.Temperature[SWITCH_1].High24h = TemperatureHigh;
+         TemperatureData.Temperature[SWITCH_1].Low24h = TemperatureLow;
+         break;
+      case SWITCH_1:
+         TemperatureData.Temperature[SWITCH_0].High24h = TemperatureHigh;
+         TemperatureData.Temperature[SWITCH_0].Low24h = TemperatureLow;
+         break;
+   }
+}
+
+void UpdateTemperatureSwitch()
+{
+   switch (TemperatureData.TemperatureSwitch)
+   {
+      case SWITCH_0:
+         TemperatureData.TemperatureSwitch = SWITCH_1;
+         break;
+      case SWITCH_1:
+         TemperatureData.TemperatureSwitch = SWITCH_0;
+         break;
+   }
+}
+
 STATUS UpdateTemperature()
 {
    STATUS Status = STATUS_FAILURE;
-   ADC_RESPONSE adc_value;
-   char message[20];
-   ADC_Read(IN 8, OUT &adc_value);
+   char Message[30];
+   ADC_RESPONSE AdcValue;   
+   float AdcValueVoltage = 0;
+   int16_t TemperatureValue = 0;
    
-   sprintf(message, "Wartosc = %d", adc_value);
+   Status = ADC_Read(IN 8, OUT &AdcValue);
    
-   DMsgMessageNewLine(IN 20, IN message);
+   if (Status == STATUS_SUCCESS)
+   {
+      Status = ADC_ValueToVoltage(AdcValue, &AdcValueVoltage);
+   }
+   
+   TemperatureValue = ((AdcValueVoltage * 100) - 273) * 100;
+   
+   UpdateCurrentTemperature(TemperatureValue);
+   UpdateMaxMinTemperature(TemperatureValue / 10);
+   UpdateTemperatureSwitch();
+   
+   if (Status == STATUS_SUCCESS)
+   {
+      sprintf(Message, "ADC = %d", AdcValue);
+      DMsgMessageNewLine(IN strlen(Message), IN Message);
+      sprintf(Message, "Temp [C*100] = %d", TemperatureValue);
+      DMsgMessageNewLine(IN strlen(Message), IN Message);   
+   }
 
    return Status;
 }

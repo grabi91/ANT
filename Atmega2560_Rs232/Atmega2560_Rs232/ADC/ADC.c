@@ -4,7 +4,9 @@
  * Created: 2015-09-30 21:10:18
  *  Author: Lukasz
  */
-#include "ADC.h" 
+#include "ADC.h"
+
+#define ADC_VREF 4.53
 
 void ADC_Init()
 {
@@ -42,4 +44,14 @@ STATUS ADC_Read(IN ADC_CHANNEL Channel, OUT ADC_RESPONSE *pADC)
 	
 	*pADC = ADC;
 	return (STATUS_SUCCESS);
+}
+
+STATUS ADC_ValueToVoltage(ADC_RESPONSE Adc, float *pVoltage)
+{
+   STATUS Status = STATUS_SUCCESS;
+   float Temp = Adc;
+   
+   *pVoltage = (Temp / 1024) * ADC_VREF;
+   
+   return Status;
 }

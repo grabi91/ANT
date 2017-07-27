@@ -15,5 +15,6 @@ typedef uint16_t ADC_RESPONSE;
 
 void ADC_Init();
 STATUS ADC_Read(IN ADC_CHANNEL Channel, OUT ADC_RESPONSE *pADC);
+STATUS ADC_ValueToVoltage(ADC_RESPONSE Adc, float *pVoltage);
 
 #endif /* ADC_H_ */
