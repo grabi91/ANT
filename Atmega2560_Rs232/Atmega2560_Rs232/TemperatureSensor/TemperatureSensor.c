@@ -16,6 +16,8 @@
 #define REQUEST_DATA_PAGE 0x01
 #define REQUEST_ANT_FS_SESSION 0x02
 
+#define ADC_BUFFER_SIZE 15
+
 ANT_MESG_Q_PP_TABLE_FUNC_TEMPLATE(HandleTransmit);
 ANT_MESG_Q_PP_TABLE_FUNC_TEMPLATE(HandleReceive);
 
@@ -116,6 +118,13 @@ typedef struct _PRODUCT_INFORMATION
    uint32_t SerialNumber;
 } PRODUCT_INFORMATION;
 
+typedef struct _ADC_DATA
+{
+   uint8_t Size;
+   uint8_t WritePointer;
+   ADC_RESPONSE Data[ADC_BUFFER_SIZE];
+} ADC_DATA;
+
 typedef struct _TEMPERATURE_SENSOR_DATA_CONTEXT
 {
    T_S_PAGE MainDataPage;
@@ -134,6 +143,7 @@ typedef struct _TEMPERATURE_SENSOR_DATA_CONTEXT
    TEMPERATURE_DATA Temperature[SWTICH_LIMIT];
    MANUFACTURER_IDENTIFICATION ManufacturerInformation;
    PRODUCT_INFORMATION ProductInformation;
+   ADC_DATA Adc;
 } TEMPERATURE_SENSOR_DATA_CONTEXT;
 
 TEMPERATURE_SENSOR_DATA_CONTEXT TemperatureData;
@@ -178,6 +188,9 @@ STATUS TemperatureSensorInit()
 
    TemperatureData.ProductInformation.SerialNumber = 0x00000004;
    TemperatureData.ProductInformation.SW_Revision = 0x05;
+   
+   TemperatureData.Adc.Size = 0;
+   TemperatureData.Adc.WritePointer = 0;
 
    return Status;
 }
@@ -338,6 +351,75 @@ void UpdateTemperatureSwitch()
    }
 }
 
+void BubbleSort(ADC_RESPONSE *Buffer, uint8_t BufferSize)
+{
+   do
+   {
+      for (uint8_t i = 0; i < BufferSize - 1; i++)
+      {
+         if (Buffer[i] > Buffer[i + 1])
+         {
+            ADC_RESPONSE temp = Buffer[i + 1];
+            Buffer[i + 1] = Buffer[i];
+            Buffer[i] = temp;
+         }
+      }
+      BufferSize--;
+   } while (BufferSize > 1);
+}
+
+ADC_RESPONSE GetMedian(ADC_RESPONSE *Buffer, uint8_t BufferSize)
+{
+   ADC_RESPONSE Median = 0;
+
+   BubbleSort(Buffer, BufferSize);
+
+   if (BufferSize & 1)
+   {
+      uint8_t BufferCenter = BufferSize / 2;
+
+      Median = Buffer[BufferCenter];
+   }
+   else
+   {
+      uint8_t BufferCenter = BufferSize / 2;
+
+      Median = (Buffer[BufferCenter] + Buffer[BufferCenter - 1]) / 2;
+   }
+
+   return Median;
+}
+
+void UpdateAdcData(ADC_RESPONSE Adc)
+{
+   TemperatureData.Adc.Data[TemperatureData.Adc.WritePointer] = Adc;
+   
+   if (TemperatureData.Adc.Size < ADC_BUFFER_SIZE)
+   {
+      TemperatureData.Adc.Size++;   
+   }
+
+   TemperatureData.Adc.WritePointer++;
+   if (TemperatureData.Adc.WritePointer >= ADC_BUFFER_SIZE)
+   {
+      TemperatureData.Adc.WritePointer = 0;
+   }
+}
+
+ADC_RESPONSE ReadAdcData()
+{
+   STATUS Status = STATUS_FAILURE;
+   ADC_RESPONSE AdcValue;
+   Status = ADC_Read(IN 8, OUT &AdcValue);
+   
+   if (Status == STATUS_SUCCESS)
+   {
+      UpdateAdcData(AdcValue);
+   }
+   
+   return GetMedian(TemperatureData.Adc.Data, TemperatureData.Adc.Size);      
+}
+
 STATUS UpdateTemperature()
 {
    STATUS Status = STATUS_FAILURE;
@@ -346,12 +428,9 @@ STATUS UpdateTemperature()
    float AdcValueVoltage = 0;
    int16_t TemperatureValue = 0;
    
-   Status = ADC_Read(IN 8, OUT &AdcValue);
+   AdcValue = ReadAdcData();
    
-   if (Status == STATUS_SUCCESS)
-   {
-      Status = ADC_ValueToVoltage(AdcValue, &AdcValueVoltage);
-   }
+   Status = ADC_ValueToVoltage(AdcValue, &AdcValueVoltage);
    
    TemperatureValue = ((AdcValueVoltage * 100) - 273) * 100;
    
@@ -362,6 +441,8 @@ STATUS UpdateTemperature()
    if (Status == STATUS_SUCCESS)
    {
       sprintf(Message, "ADC = %d", AdcValue);
+      DMsgMessageNewLine(IN strlen(Message), IN Message);
+      sprintf(Message, "ADC [V] = %f", AdcValueVoltage);
       DMsgMessageNewLine(IN strlen(Message), IN Message);
       sprintf(Message, "Temp [C*100] = %d", TemperatureValue);
       DMsgMessageNewLine(IN strlen(Message), IN Message);   

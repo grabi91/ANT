@@ -7,11 +7,21 @@
 #include "ADC.h"
 
 #define ADC_VREF 4.53
+#define ADC_MULTIPLE_1 1
+#define ADC_MULTIPLE_2 2
+#define ADC_MULTIPLE ADC_MULTIPLE_1
 
 void ADC_Init()
 {
 	// AREF = AVcc
-	ADMUX = (1<<REFS0);
+   if(ADC_MULTIPLE == ADC_MULTIPLE_2)
+   {
+	   ADMUX = (1<<REFS0)|(1<<REFS1);
+   }
+   else if(ADC_MULTIPLE == ADC_MULTIPLE_1)
+   {
+      ADMUX = (1<<REFS0);
+   }            
 	
 	// ADC Enable and prescaler of 128
 	// 16000000/128 = 125000
@@ -51,7 +61,7 @@ STATUS ADC_ValueToVoltage(ADC_RESPONSE Adc, float *pVoltage)
    STATUS Status = STATUS_SUCCESS;
    float Temp = Adc;
    
-   *pVoltage = (Temp / 1024) * ADC_VREF;
+   *pVoltage = (Temp / 1024) * ADC_VREF * ADC_MULTIPLE;
    
    return Status;
 }
