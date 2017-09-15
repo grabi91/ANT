@@ -92,11 +92,11 @@ typedef enum _TEMPERATURE_DATA_SWITCH
 
 typedef struct _TEMPERATURE_DATA
 {
-   int16_t Low24h;                  //Signed Integer representing the lowest temperature recorded over 
+   int16_t Low24h;                  //Signed Integer representing the lowest temperature recorded over
                                     //the last 24 hours (0x800 invalid)
                                     //Unit 0.1°C
                                     //Range -204.7 to 204.7
-   int16_t High24h;                 //Signed Integer representing the highest temperature recorded over 
+   int16_t High24h;                 //Signed Integer representing the highest temperature recorded over
                                     //the last 24 hours (0x800 invalid)
                                     //Unit 0.1°C
                                     //Range -204.7 to 204.7
@@ -173,13 +173,13 @@ STATUS TemperatureSensorInit()
    TemperatureData.SupportedMainDataPages = SUPPORTED_PAGES_0_1;
 
    TemperatureData.EventCount = 0;
-   
+
    TemperatureData.TemperatureSwitch = SWITCH_0;
    for(TEMPERATURE_DATA_SWITCH i = SWITCH_0; i < SWTICH_LIMIT; i++)
    {
       TemperatureData.Temperature[i].Current = INVALID_TEMPERATURE;
       TemperatureData.Temperature[i].Low24h = INVALID_24H_TEMPERATURE;
-      TemperatureData.Temperature[i].High24h = INVALID_24H_TEMPERATURE;  
+      TemperatureData.Temperature[i].High24h = INVALID_24H_TEMPERATURE;
    }
 
    TemperatureData.ManufacturerInformation.HWRevision = 0x01;
@@ -188,7 +188,7 @@ STATUS TemperatureSensorInit()
 
    TemperatureData.ProductInformation.SerialNumber = 0x00000004;
    TemperatureData.ProductInformation.SW_Revision = 0x05;
-   
+
    TemperatureData.Adc.Size = 0;
    TemperatureData.Adc.WritePointer = 0;
 
@@ -314,17 +314,17 @@ void UpdateMaxMinTemperature(int16_t Temperature)
 {
    int16_t TemperatureHigh = TemperatureData.Temperature[TemperatureData.TemperatureSwitch].High24h;
    int16_t TemperatureLow = TemperatureData.Temperature[TemperatureData.TemperatureSwitch].Low24h;
-   
+
    if((TemperatureHigh == INVALID_24H_TEMPERATURE) || (TemperatureHigh < Temperature))
    {
       TemperatureHigh = Temperature;
    }
-   
+
    if((TemperatureLow == INVALID_24H_TEMPERATURE) || (TemperatureLow > Temperature))
    {
       TemperatureLow = Temperature;
    }
-   
+
    switch (TemperatureData.TemperatureSwitch)
    {
       case SWITCH_0:
@@ -393,10 +393,10 @@ ADC_RESPONSE GetMedian(ADC_RESPONSE *Buffer, uint8_t BufferSize)
 void UpdateAdcData(ADC_RESPONSE Adc)
 {
    TemperatureData.Adc.Data[TemperatureData.Adc.WritePointer] = Adc;
-   
+
    if (TemperatureData.Adc.Size < ADC_BUFFER_SIZE)
    {
-      TemperatureData.Adc.Size++;   
+      TemperatureData.Adc.Size++;
    }
 
    TemperatureData.Adc.WritePointer++;
@@ -411,13 +411,13 @@ ADC_RESPONSE ReadAdcData()
    STATUS Status = STATUS_FAILURE;
    ADC_RESPONSE AdcValue;
    Status = ADC_Read(IN 8, OUT &AdcValue);
-   
+
    if (Status == STATUS_SUCCESS)
    {
       UpdateAdcData(AdcValue);
    }
-   
-   return GetMedian(TemperatureData.Adc.Data, TemperatureData.Adc.Size);      
+
+   return GetMedian(TemperatureData.Adc.Data, TemperatureData.Adc.Size);
 }
 
 //Funckja s³u¿y do odczytu aktualnej temperatury
@@ -451,7 +451,7 @@ STATUS UpdateTemperature()
       sprintf(Message, "ADC [V] = %f", AdcValueVoltage);
       DMsgMessageNewLine(IN strlen(Message), IN Message);
       sprintf(Message, "Temp [C*100] = %d", TemperatureValue);
-      DMsgMessageNewLine(IN strlen(Message), IN Message);   
+      DMsgMessageNewLine(IN strlen(Message), IN Message);
    }
 
    return Status;
