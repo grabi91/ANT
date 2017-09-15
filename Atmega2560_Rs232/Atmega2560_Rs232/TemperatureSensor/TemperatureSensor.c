@@ -420,24 +420,30 @@ ADC_RESPONSE ReadAdcData()
    return GetMedian(TemperatureData.Adc.Data, TemperatureData.Adc.Size);      
 }
 
+//Funckja s³u¿y do odczytu aktualnej temperatury
 STATUS UpdateTemperature()
 {
    STATUS Status = STATUS_FAILURE;
    char Message[30];
-   ADC_RESPONSE AdcValue;   
+   ADC_RESPONSE AdcValue;
    float AdcValueVoltage = 0;
    int16_t TemperatureValue = 0;
-   
+
+   //Odczytanie wartoœci a przetwornika analogowo cyfrowego
    AdcValue = ReadAdcData();
-   
+
+   //Zamiana wartoœci bitowej na wartoœæ napiêcia
    Status = ADC_ValueToVoltage(AdcValue, &AdcValueVoltage);
-   
+
+   //Przeliczenie napiêcia na odpowiadaj¹ca temperaturê
+   //i pomno¿enie tej wartoœæ razy 100
    TemperatureValue = ((AdcValueVoltage * 100) - 273) * 100;
-   
+
+   //Zapisanie wartoœci do odpowiednich rejestrów aplikacji
    UpdateCurrentTemperature(TemperatureValue);
    UpdateMaxMinTemperature(TemperatureValue / 10);
    UpdateTemperatureSwitch();
-   
+
    if (Status == STATUS_SUCCESS)
    {
       sprintf(Message, "ADC = %d", AdcValue);
