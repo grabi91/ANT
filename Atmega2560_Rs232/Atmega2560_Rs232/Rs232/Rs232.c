@@ -65,23 +65,24 @@ void USART_Init( IN uint32_t baud, IN UART_ENUM uart )
    FIFO *pFifoIn, *pFifoOut;
    UART_ADDRESS UartAddress;
 
-   ubbr = (F_CPU / (16 * baud)) - 1;
-
    PickUart(IN uart, INOUT &pFifoIn, INOUT &pFifoOut, INOUT &UartAddress);
 
+   //Inicjalizajca Fifo
    FifoInit(OUT pFifoOut);
    FifoInit(OUT pFifoIn);
+
    //Ustawienie szybkoœci transmisji
+   ubbr = (F_CPU / (16 * baud)) - 1;
    REGISTER_ADRESS_8(UartAddress.UBBRH) = (unsigned char)(ubbr>>8);
    REGISTER_ADRESS_8(UartAddress.UBBRL) = (unsigned char)ubbr;
 
    //W³¹czenie przerwañ dla nadawanych i odbieranych danych
    REGISTER_ADRESS_8(UartAddress.UCSRB) = (1<<RXEN0)|(1<<TXEN0)|(1<<RXCIE0);
    REGISTER_ADRESS_8(UartAddress.UCSRB) &= ~(1<<UDRIE0);
+
    //Ustawienie formatu ramki
    REGISTER_ADRESS_8(UartAddress.UCSRC) = (1 << UCSZ01) | (1 << UCSZ00) | (0 << USBS0) |
-   (0 << UPM01) | (0 << UPM00) | (0 << UMSEL01) |
-   (0 << UMSEL00);
+   (0 << UPM01) | (0 << UPM00) | (0 << UMSEL01) | (0 << UMSEL00);
 }
 
 //Wpisanie wartoœci do kolejki Fifo
