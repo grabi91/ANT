@@ -262,6 +262,7 @@ STATUS EncodeData(T_S_PAGE Page, uint8_t *pData, uint8_t DataLength)
 STATUS DecodeData(uint8_t *pData, uint8_t DataLength)
 {
    STATUS Status = STATUS_SUCCESS;
+   char Message[30];
 
    if (DataLength < MESG_ANT_MAX_PAYLOAD_SIZE)
    {
@@ -282,6 +283,8 @@ STATUS DecodeData(uint8_t *pData, uint8_t DataLength)
                   TemperatureData.RequestedPage.Page = pData[6];
                   TemperatureData.RequestedPage.RequestCount = (pData[5] & 0x7F);
                   TemperatureData.RequestedPage.Requested = REQUESTED;
+                  sprintf(Message, "Requested Page = %d", pData[6]);
+                  DMsgMessageNewLine(IN strlen(Message), IN Message);
 
                   break;
                }
