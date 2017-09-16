@@ -9,123 +9,130 @@ ANT_MESSAGE_CONTEXT ANT_Framer_Context;
 
 unsigned char ANT_Framer_CheckSum_Calc8(unsigned char *pData, unsigned char DataSize, unsigned char ChechSumStartValue)
 {
-	unsigned char CheckSum = ChechSumStartValue;
-	int i;
+   unsigned char CheckSum = ChechSumStartValue;
+   int i;
 
-	// Calculate the CheckSum value (XOR of all bytes in the buffer).
-	for (i = 0; i < DataSize; i++)
-		CheckSum ^= pData[i];
+   //Oblicz sumę kontrolną (operacja XOR na wszystkich bajtach w buforze)
+   for (i = 0; i < DataSize; i++)
+      CheckSum ^= pData[i];
 
-	return CheckSum;
+   return CheckSum;
 }
 
 STATUS ANT_Framer_SendClearMessage()
 {
-	STATUS Status = STATUS_SUCCESS;
+   STATUS Status = STATUS_SUCCESS;
 
-	memset(&ANT_Framer_Context.AntFramer, 0, sizeof(ANT_Framer_Context.AntFramer));
-	ANT_Framer_Context.MessageReady = ANT_FMS_NOT_READY;
+   memset(&ANT_Framer_Context.AntFramer, 0, sizeof(ANT_Framer_Context.AntFramer));
+   ANT_Framer_Context.MessageReady = ANT_FMS_NOT_READY;
 
-	return Status;
+   return Status;
 }
 
 STATUS ANT_Framer_CheckNewByte()
 {
-	STATUS Status = STATUS_SUCCESS;
-	STATUS UsartStatus = STATUS_SUCCESS;
-	unsigned char dataByte = 0;
-	unsigned char CheckSum = 0;
+   STATUS Status = STATUS_SUCCESS;
+   STATUS UsartStatus = STATUS_SUCCESS;
+   unsigned char dataByte = 0;
+   unsigned char CheckSum = 0;
 
-	if (ANT_Framer_Context.MessageReady == ANT_FMS_NOT_READY)
-	{
-		UsartStatus = USART_ReadByteFromFifo(UART2, OUT &dataByte);
-		if (UsartStatus == STATUS_SUCCESS)
-		{
-			if (ANT_Framer_Context.AntFramer.ReadPointer == MESG_SYNC_OFFSET)
-			{
-				if (dataByte == MESG_TX_SYNC)
-				{
-					ANT_Framer_Context.AntFramer.ReadPointer++;
-					ANT_Framer_Context.AntFramer.ChechSumPartValue = ANT_Framer_CheckSum_Calc8(&dataByte, sizeof(dataByte), ANT_Framer_Context.AntFramer.ChechSumPartValue);
-				}
-			}
-			else if (ANT_Framer_Context.AntFramer.ReadPointer == MESG_SIZE_OFFSET)
-			{
-				ANT_Framer_Context.AntFramer.ReadPointer++;
-				ANT_Framer_Context.AntFramer.AntItem.Size = dataByte;
-				ANT_Framer_Context.AntFramer.ChechSumPartValue = ANT_Framer_CheckSum_Calc8(&dataByte, sizeof(dataByte), ANT_Framer_Context.AntFramer.ChechSumPartValue);
-			}
-			else if (ANT_Framer_Context.AntFramer.ReadPointer == MESG_ID_OFFSET)
-			{
-				ANT_Framer_Context.AntFramer.ReadPointer++;
-				ANT_Framer_Context.AntFramer.AntItem.AntMessage.MessageID = dataByte;
-				ANT_Framer_Context.AntFramer.ChechSumPartValue = ANT_Framer_CheckSum_Calc8(&dataByte, sizeof(dataByte), ANT_Framer_Context.AntFramer.ChechSumPartValue);
-			}
-			else if (ANT_Framer_Context.AntFramer.ReadPointer == MESG_CHECKSUM_OFFSET(ANT_Framer_Context.AntFramer.AntItem.Size))
-			{
-				CheckSum = ANT_Framer_CheckSum_Calc8(ANT_Framer_Context.AntFramer.AntItem.AntMessage.Data, ANT_Framer_Context.AntFramer.AntItem.Size, ANT_Framer_Context.AntFramer.ChechSumPartValue);
+   if (ANT_Framer_Context.MessageReady == ANT_FMS_NOT_READY)
+   {
+      UsartStatus = USART_ReadByteFromFifo(UART2, OUT &dataByte);
+      if (UsartStatus == STATUS_SUCCESS)
+      {
+         if (ANT_Framer_Context.AntFramer.ReadPointer == MESG_SYNC_OFFSET)
+         {
+            if (dataByte == MESG_TX_SYNC)
+            {
+               ANT_Framer_Context.AntFramer.ReadPointer++;
+               ANT_Framer_Context.AntFramer.ChechSumPartValue = ANT_Framer_CheckSum_Calc8(&dataByte, sizeof(dataByte), ANT_Framer_Context.AntFramer.ChechSumPartValue);
+            }
+         }
+         else if (ANT_Framer_Context.AntFramer.ReadPointer == MESG_SIZE_OFFSET)
+         {
+            ANT_Framer_Context.AntFramer.ReadPointer++;
+            ANT_Framer_Context.AntFramer.AntItem.Size = dataByte;
+            ANT_Framer_Context.AntFramer.ChechSumPartValue = ANT_Framer_CheckSum_Calc8(&dataByte, sizeof(dataByte), ANT_Framer_Context.AntFramer.ChechSumPartValue);
+         }
+         else if (ANT_Framer_Context.AntFramer.ReadPointer == MESG_ID_OFFSET)
+         {
+            ANT_Framer_Context.AntFramer.ReadPointer++;
+            ANT_Framer_Context.AntFramer.AntItem.AntMessage.MessageID = dataByte;
+            ANT_Framer_Context.AntFramer.ChechSumPartValue = ANT_Framer_CheckSum_Calc8(&dataByte, sizeof(dataByte), ANT_Framer_Context.AntFramer.ChechSumPartValue);
+         }
+         else if (ANT_Framer_Context.AntFramer.ReadPointer == MESG_CHECKSUM_OFFSET(ANT_Framer_Context.AntFramer.AntItem.Size))
+         {
+            CheckSum = ANT_Framer_CheckSum_Calc8(ANT_Framer_Context.AntFramer.AntItem.AntMessage.Data, ANT_Framer_Context.AntFramer.AntItem.Size, ANT_Framer_Context.AntFramer.ChechSumPartValue);
 
-				if (CheckSum == dataByte)
-				{
-					ANT_Framer_Context.MessageReady = ANT_FMS_READY;
-				}
-			}
-			else
-			{				
-				ANT_Framer_Context.AntFramer.AntItem.AntMessage.Data[ANT_Framer_Context.AntFramer.ReadPointer - MESG_DATA_OFFSET] = dataByte;
-				ANT_Framer_Context.AntFramer.ReadPointer++;
-			}
-		}
-	}
+            if (CheckSum == dataByte)
+            {
+               ANT_Framer_Context.MessageReady = ANT_FMS_READY;
+            }
+         }
+         else
+         {
+            ANT_Framer_Context.AntFramer.AntItem.AntMessage.Data[ANT_Framer_Context.AntFramer.ReadPointer - MESG_DATA_OFFSET] = dataByte;
+            ANT_Framer_Context.AntFramer.ReadPointer++;
+         }
+      }
+   }
 
-	return Status;
+   return Status;
 }
 
+//Funckja służąca do wysyłania ramek do modułu ANT+
 STATUS ANT_Framer_SendMessage(ANT_MESSAGE_ITEM* pAntMessage)
 {
-	STATUS Status = STATUS_FAILURE;
-	//unsigned char data[] = { 0xA4, 0x01, 0x4A, 0x00, 0xEF, 0x00, 0x00 };
-	unsigned char DataToSend[MESG_MAX_SIZE_VALUE]; //TODO change buffer size
-	unsigned char DataSize = 0;
+   STATUS Status = STATUS_FAILURE;
+   unsigned char DataToSend[MESG_MAX_SIZE_VALUE];
+   unsigned char DataSize = 0;
 
-	DataToSend[DataSize] = MESG_TX_SYNC;
-	DataSize++;
+   //Ustawienie bajtu synchronizacyjnego 
+   DataToSend[DataSize] = MESG_TX_SYNC;
+   DataSize++;
 
-	DataToSend[DataSize] = pAntMessage->Size;
-	DataSize++;
+   //Ustawienie długości wiadomości
+   DataToSend[DataSize] = pAntMessage->Size;
+   DataSize++;
 
-	DataToSend[DataSize] = pAntMessage->AntMessage.MessageID;
-	DataSize++;
+   //Ustawienie identyfikatora wiadomości
+   DataToSend[DataSize] = pAntMessage->AntMessage.MessageID;
+   DataSize++;
 
-	memcpy(&DataToSend[DataSize], pAntMessage->AntMessage.Data, pAntMessage->Size);
-	DataSize += pAntMessage->Size;
+   //Skopiowanie danych do wysłania
+   memcpy(&DataToSend[DataSize], pAntMessage->AntMessage.Data, pAntMessage->Size);
+   DataSize += pAntMessage->Size;
 
-	DataToSend[DataSize] = ANT_Framer_CheckSum_Calc8(DataToSend, DataSize, 0);
-	DataSize++;
+   //Ustawienie sumu kontrolnej
+   DataToSend[DataSize] = ANT_Framer_CheckSum_Calc8(DataToSend, DataSize, 0);
+   DataSize++;
 
-	DataToSend[DataSize] = 0;
-	DataSize++;
-	DataToSend[DataSize] = 0;
-	DataSize++;
+   //Na końcu wiadomości mogą być dodane dwa zera
+   DataToSend[DataSize] = 0;
+   DataSize++;
+   DataToSend[DataSize] = 0;
+   DataSize++;
 
-	Status = USART_Transmit(UART2, DataSize, DataToSend);
+   //Przekazanie bufora do interfejsu szeregowego
+   Status = USART_Transmit(UART2, DataSize, DataToSend);
 
-	return Status;
+   return Status;
 }
 
 STATUS ANT_Framer_GetMessage(ANT_MESSAGE_ITEM* pAntMessage)
 {
-	STATUS Status = STATUS_FAILURE;
+   STATUS Status = STATUS_FAILURE;
 
-	ANT_Framer_CheckNewByte();
-	
-	if (ANT_Framer_Context.MessageReady == ANT_FMS_READY)
-	{
-		memcpy(pAntMessage, &ANT_Framer_Context.AntFramer.AntItem, sizeof(ANT_MESSAGE_ITEM));
-		Status = ANT_Framer_SendClearMessage();
-	}
+   ANT_Framer_CheckNewByte();
 
-	return Status;
+   if (ANT_Framer_Context.MessageReady == ANT_FMS_READY)
+   {
+      memcpy(pAntMessage, &ANT_Framer_Context.AntFramer.AntItem, sizeof(ANT_MESSAGE_ITEM));
+      Status = ANT_Framer_SendClearMessage();
+   }
+
+   return Status;
 }
 
 //////////////////////////////////////////////
