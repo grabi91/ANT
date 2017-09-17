@@ -1,10 +1,3 @@
-/*
- * Fifo.c
- *
- * Created: 2015-09-01 19:39:05
- *  Author: Lukasz
- */
-
 #include "Fifo.h"
 
 //Inicjalizacja kolejki Fifo

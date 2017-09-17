@@ -1,14 +1,7 @@
-/*
- * Atmega2560_Rs232.c
- *
- * Created: 2015-09-01 18:11:58
- *  Author: Lukasz
- */ 
 #include "typedef.h"
 #include "Rs232\Rs232.h"
 #include "Debug_MSG\Debug_Msg.h"
 #include "ADC\ADC.h"
-//#include "ANT\ANT.h"
 #include "ANT/ANT_Framer.h"
 #include "ANT/ANT_Message_Queue.h"
 #include "TemperatureSensor/TemperatureSensor.h"
@@ -42,16 +35,11 @@ int main(void)
 	STATUS Status;
 	ANT_MESSAGE_ITEM AntMessage;
 	
-   //zakazane USART_Init(IN BAUD, IN UART0);
-	USART_Init(IN BAUD, IN UART1);
+   USART_Init(IN BAUD, IN UART1);
 	USART_Init(IN 57600, IN UART_ANT);
 	USART_Init(IN 57600, IN UART3);
 	
 	ADC_Init();	
-	
-	//DDRF = 0xFF; //konfiguracja portu jako wyjœcia
-	
-	//MCUCR |= (1<<IVSEL);
 	
 	sei();
 	

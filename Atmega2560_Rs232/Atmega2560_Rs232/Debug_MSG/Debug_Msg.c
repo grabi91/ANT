@@ -1,9 +1,3 @@
-/*
- * Debug_Msg.c
- *
- * Created: 2015-09-28 18:43:18
- *  Author: Lukasz
- */
 #include "Debug_Msg.h"
 #ifdef WIN32
 #include <stdio.h>

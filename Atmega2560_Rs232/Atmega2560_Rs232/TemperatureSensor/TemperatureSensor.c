@@ -34,7 +34,7 @@ typedef enum _TEMPERATURE_SENSOR_PAGE
 typedef struct _TEMPERATURE_SENSOR_REQUESTED_PAGE
 {
    T_S_PAGE Page;
-   uint8_t Requested;               // = 1 if requested
+   uint8_t Requested;               // = 1 jeœli zazadane
    uint8_t RequestCount;            //
 } T_S_REQUESTED_PAGE;
 
@@ -46,8 +46,8 @@ typedef struct _TEMPERATURE_SENSOR_BACKGROUND_DATA_PAGE
 
 enum _DEFAULT_TRANSMISSION_RATE
 {
-   T_R_05HZ = 0,                    //default transmission rate of 0.5 Hz
-   T_R_4HZ = 1,                     //default transmission rate of 4 Hz
+   T_R_05HZ = 0,                    //czestotliwosc 0.5 Hz
+   T_R_4HZ = 1,                     //czestotliwosc 4 Hz
 } DEFAULT_TRANSMISSION_RATE;
 
 enum _UTC_TIME
@@ -469,7 +469,6 @@ ANT_MESG_Q_PP_TABLE_FUNC_TEMPLATE(HandleTransmit)
 
    DMsgMessageNewLine(9, (unsigned char*)"EventTx ");
 
-   //Pick page to send
    if (TemperatureData.RequestedPage.Requested == REQUESTED)
    {
       PageToSend = TemperatureData.RequestedPage.Page;
@@ -513,13 +512,13 @@ ANT_MESG_Q_PP_TABLE_FUNC_TEMPLATE(HandleTransmit)
 
    if (Status == STATUS_SUCCESS)
    {
-      //Prepare Data
+      //Przygotuje dane
       Status = EncodeData(PageToSend, &DataToSend, DataToSendLength);
    }
 
    if (Status == STATUS_SUCCESS)
    {
-      //Send Data
+      //Wyslij dane
       Status = ANT_Framer_Mesg_SendBroadcastData(USER_ANTCHANNEL, &DataToSend);
 
       for (int i = 0; i < DataToSendLength; i++)

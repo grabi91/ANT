@@ -1,9 +1,3 @@
-/*
- * Rs232.c
- *
- * Created: 2015-09-01 19:13:12
- *  Author: Lukasz
- */
 #include "Rs232.h"
 
 UART_DEFINE()
@@ -216,26 +210,4 @@ STATUS USART_Transmit(IN UART_ENUM Uart, IN UART_LENGTH UartLength, IN unsigned 
    REGISTER_ADRESS_8(UartAddress.UCSRB) |= (1<<UDRIE3);
 
    return Status;
-}
-
-void USART_TransmitByte(IN unsigned char data)
-{
-   /* Wait for empty transmit buffer */
-   while ( !( UCSR1A & (1<<UDRE1)) )
-   {
-
-   }
-   ;
-   /* Put data into buffer, sends the data */
-
-   UDR1 = data;
-}
-
-unsigned char USART_Receive()
-{
-   /* Wait for data to be received */
-   while ( !(UCSR1A & (1<<RXC1)) )
-   ;
-   /* Get and return received data from buffer */
-   return UDR1;
 }

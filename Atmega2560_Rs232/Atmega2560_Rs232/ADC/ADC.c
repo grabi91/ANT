@@ -1,9 +1,3 @@
-/*
- * ADC.c
- *
- * Created: 2015-09-30 21:10:18
- *  Author: Lukasz
- */
 #include "ADC.h"
 
 #define ADC_VREF 4.76

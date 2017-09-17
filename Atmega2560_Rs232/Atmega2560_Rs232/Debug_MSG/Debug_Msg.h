@@ -1,10 +1,3 @@
-/*
- * Debug_Msg.h
- *
- * Created: 2015-09-28 18:43:39
- *  Author: Lukasz
- */ 
-
 #include "..\typedef.h"
 #ifdef WIN32
 #else

@@ -1,9 +1,3 @@
-/*
- * ADC.h
- *
- * Created: 2015-09-30 21:10:32
- *  Author: Lukasz
- */ 
 #include "..\typedef.h"
 #include "..\Debug_MSG\Debug_Msg.h"
 

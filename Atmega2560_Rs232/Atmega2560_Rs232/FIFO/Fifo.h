@@ -1,9 +1,3 @@
-/*
- * Fifo.h
- *
- * Created: 2015-09-01 19:40:47
- *  Author: Lukasz
- */
 #include "..\typedef.h"
 
 

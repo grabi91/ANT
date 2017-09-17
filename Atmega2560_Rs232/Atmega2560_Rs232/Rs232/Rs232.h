@@ -1,9 +1,3 @@
-/*
- * Rs232.h
- *
- * Created: 2015-09-01 19:14:44
- *  Author: Lukasz
- */
 #include "..\typedef.h"
 #include "..\FIFO\Fifo.h"
 
@@ -60,8 +54,5 @@ STATUS USART_TransmitByteByFifo(IN UART_ENUM Uart, IN unsigned char data);
 STATUS USART_Transmit(IN UART_ENUM Uart, IN UART_LENGTH UartLength, IN unsigned char *pUartData);
 STATUS USART_ReadByteFromFifo(IN UART_ENUM Uart, OUT unsigned char *pData);
 void USART_TransmitByte(IN unsigned char data);
-unsigned char USART_Receive();
-
-
 
 #endif /* RS232_H_ */
