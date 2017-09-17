@@ -1,8 +1,8 @@
 #include "..\typedef.h"
 #include "..\FIFO\Fifo.h"
 
-#ifndef RS232_H_
-#define RS232_H_
+#ifndef UART_H_
+#define UART_H_
 
 typedef enum _UART_ENUM{
    UART0 = 0xC0,
@@ -55,4 +55,4 @@ STATUS USART_Transmit(IN UART_ENUM Uart, IN UART_LENGTH UartLength, IN unsigned 
 STATUS USART_ReadByteFromFifo(IN UART_ENUM Uart, OUT unsigned char *pData);
 void USART_TransmitByte(IN unsigned char data);
 
-#endif /* RS232_H_ */
+#endif /* UART_H_ */
