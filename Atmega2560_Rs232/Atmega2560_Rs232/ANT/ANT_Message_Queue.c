@@ -5,7 +5,6 @@
 
 ANT_PayloadFunction ANT_Mesg_Q_ProcessPayload_Table[ANT_MESG_Q_PP_TABLE_SIZE];
 
-
 ANT_MESG_Q_PP_TABLE_FUNC_TEMPLATE(ANT_Mesg_Q_PP_ResetSystem);
 ANT_MESG_Q_PP_TABLE_FUNC_TEMPLATE(ANT_Mesg_Q_PP_StartUp);
 ANT_MESG_Q_PP_TABLE_FUNC_TEMPLATE(ANT_Mesg_Q_PP_ResponseEvent);
@@ -17,6 +16,7 @@ ANT_MESG_Q_PP_TABLE_FUNC_TEMPLATE(ANT_Mesg_Q_PP_SetChannelRFFrequency);
 ANT_MESG_Q_PP_TABLE_FUNC_TEMPLATE(ANT_Mesg_Q_PP_OpenChannel);
 ANT_MESG_Q_PP_TABLE_FUNC_TEMPLATE(ANT_Mesg_Q_PP_RxExtMesgsEnable);
 
+//Inicjalizacjas
 STATUS ANT_Mesg_Q_Init()
 {
    STATUS Status = STATUS_SUCCESS;
@@ -35,10 +35,13 @@ STATUS ANT_Mesg_Q_Init()
    return Status;
 }
 
+//Zerestracja funkcji na dany event
 STATUS ANT_Mesg_Q_RegisterMesgEvent(uint8_t MesgEventId, ANT_PayloadFunction FunctionPointer, ANT_MESG_Q_REG_OPTION ForceRegister)
 {
    STATUS Status = STATUS_SUCCESS;
 
+   //Jesli nie jest wlaczony tryb wymuszania zapisu nowego eventu
+   //Sprawdzane jest czy do danego eventu nie ma juz przypisanej funkcji
    if (ForceRegister == ANT_M_Q_R_STANDARD)
    {
       if (ANT_Mesg_Q_ProcessPayload_Table[MesgEventId] != 0)
@@ -49,29 +52,33 @@ STATUS ANT_Mesg_Q_RegisterMesgEvent(uint8_t MesgEventId, ANT_PayloadFunction Fun
 
    if (Status == STATUS_SUCCESS)
    {
+      //Przypisanie funkcji do evetu
       ANT_Mesg_Q_ProcessPayload_Table[MesgEventId] = FunctionPointer;
    }
 
    return Status;
 }
 
+//Procesowanie wiadomoœci
 STATUS ANT_Mesg_Q_ProcessPayload(ANT_MESSAGE_ITEM* pAntMessage)
 {
    STATUS Status = STATUS_FAILURE;
 
+   //Sprawdzenie czy jest jakas funkcja przypisane
    if (ANT_Mesg_Q_ProcessPayload_Table[pAntMessage->AntMessage.MessageID] == 0)
    {
       Status = STATUS_MESSEGE_FUNCTION_NOT_DEFINE;
    }
    else
    {
+      //Wywolanie odpowiedniej funkcji
       Status = (*ANT_Mesg_Q_ProcessPayload_Table[pAntMessage->AntMessage.MessageID])(pAntMessage);
    }
 
    return Status;
 }
 
-
+//Ponizej znajduja sie funkcje ktore sa przypisane do konkretnych eventow
 
 ANT_MESG_Q_PP_TABLE_FUNC_TEMPLATE(ANT_Mesg_Q_PP_StartUp)
 {
@@ -112,12 +119,12 @@ ANT_MESG_Q_PP_TABLE_FUNC_TEMPLATE(ANT_Mesg_Q_PP_ResponseEvent)
 
    if (pAntMessage->AntMessage.Data[1] == 1)
    {
-      //Channel Event
+      //Jesli jest to Channel Event
       EventByteNumber = 2;
    }
    else
    {
-      //Channel Respone
+      //Jesli jest to Channel Respone
       EventByteNumber = 1;
    }
 

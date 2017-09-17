@@ -7,6 +7,7 @@
 
 ANT_MESSAGE_CONTEXT ANT_Framer_Context;
 
+//Funkcja oblicza sume kontrolna
 unsigned char ANT_Framer_CheckSum_Calc8(unsigned char *pData, unsigned char DataSize, unsigned char ChechSumStartValue)
 {
    unsigned char CheckSum = ChechSumStartValue;
@@ -19,6 +20,7 @@ unsigned char ANT_Framer_CheckSum_Calc8(unsigned char *pData, unsigned char Data
    return CheckSum;
 }
 
+//Funkcja czysci bufor w ktorym jest zapisywana ramka
 STATUS ANT_Framer_SendClearMessage()
 {
    STATUS Status = STATUS_SUCCESS;
@@ -29,6 +31,7 @@ STATUS ANT_Framer_SendClearMessage()
    return Status;
 }
 
+//Funkcja sprawdza i wpisuje do bufora nowe bajty
 STATUS ANT_Framer_CheckNewByte()
 {
    STATUS Status = STATUS_SUCCESS;
@@ -41,6 +44,7 @@ STATUS ANT_Framer_CheckNewByte()
       UsartStatus = USART_ReadByteFromFifo(UART2, OUT &dataByte);
       if (UsartStatus == STATUS_SUCCESS)
       {
+         //Sprawdzenie który bajt w ramce wlasnie przyszedl
          if (ANT_Framer_Context.AntFramer.ReadPointer == MESG_SYNC_OFFSET)
          {
             if (dataByte == MESG_TX_SYNC)
@@ -120,6 +124,7 @@ STATUS ANT_Framer_SendMessage(ANT_MESSAGE_ITEM* pAntMessage)
    return Status;
 }
 
+//Funkcja sluzaca do pobrania wiadomosci ANT z bufora odbierania
 STATUS ANT_Framer_GetMessage(ANT_MESSAGE_ITEM* pAntMessage)
 {
    STATUS Status = STATUS_FAILURE;
@@ -138,6 +143,8 @@ STATUS ANT_Framer_GetMessage(ANT_MESSAGE_ITEM* pAntMessage)
 //////////////////////////////////////////////
 // Message Definitions
 //////////////////////////////////////////////
+//Ponizej sa zaimplementowane funkcje sluzace do wysylania konkretnych wiadomosci do modulu ANT
+
 STATUS ANT_Framer_Mesg_ResetSystem()
 {
    STATUS Status = STATUS_FAILURE;

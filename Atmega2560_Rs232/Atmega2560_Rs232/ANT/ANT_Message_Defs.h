@@ -1,3 +1,4 @@
+// Plik zostal utworzony na podstawie ANT_Windows_Library_Package_v3.2_1
 #ifndef ANT_MESSAGE_DEFS_H_
 #define ANT_MESSAGE_DEFS_H_
 

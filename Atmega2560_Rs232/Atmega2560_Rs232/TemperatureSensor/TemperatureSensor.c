@@ -148,6 +148,7 @@ typedef struct _TEMPERATURE_SENSOR_DATA_CONTEXT
 
 TEMPERATURE_SENSOR_DATA_CONTEXT TemperatureData;
 
+//Inicjalizacja
 STATUS TemperatureSensorInit()
 {
    STATUS Status;
@@ -195,6 +196,7 @@ STATUS TemperatureSensorInit()
    return Status;
 }
 
+//Kodowanie wiadomosci
 STATUS EncodeData(T_S_PAGE Page, uint8_t *pData, uint8_t DataLength)
 {
    STATUS Status = STATUS_SUCCESS;
@@ -207,6 +209,7 @@ STATUS EncodeData(T_S_PAGE Page, uint8_t *pData, uint8_t DataLength)
 
    if (Status == STATUS_SUCCESS)
    {
+      //W zaleznosci do Page'a zostana wpisane odpowiednie dane
       switch (Page)
       {
       case PAGE_0:
@@ -259,6 +262,7 @@ STATUS EncodeData(T_S_PAGE Page, uint8_t *pData, uint8_t DataLength)
    return Status;
 }
 
+//Dekodowanie wiadomosci
 STATUS DecodeData(uint8_t *pData, uint8_t DataLength)
 {
    STATUS Status = STATUS_SUCCESS;
@@ -274,12 +278,16 @@ STATUS DecodeData(uint8_t *pData, uint8_t DataLength)
       switch (pData[0])
       {
       case PAGE_70:
+         //Sprawdzenie czy iloœci powtorzen jest wieksza od 0
+         //oraz czy zostala zazadana strona
          if (((pData[5] & 0x7F) != 0) && (pData[7] == REQUEST_DATA_PAGE))
          {
+            //Sprawdzenie czy zostala przyslana obslugiwana strona
             for (T_S_PAGE i = PAGE_0; i < PAGE_LAST_ENTRY; i++)
             {
                if (pData[6] == i)
                {
+                  //Zapisywanie strony ktora ma zostac wyslana
                   TemperatureData.RequestedPage.Page = pData[6];
                   TemperatureData.RequestedPage.RequestCount = (pData[5] & 0x7F);
                   TemperatureData.RequestedPage.Requested = REQUESTED;
@@ -300,6 +308,7 @@ STATUS DecodeData(uint8_t *pData, uint8_t DataLength)
    return Status;
 }
 
+//Aktualizacja aktualnej temperatury
 void UpdateCurrentTemperature(int16_t Temperature)
 {
    switch (TemperatureData.TemperatureSwitch)
@@ -313,6 +322,7 @@ void UpdateCurrentTemperature(int16_t Temperature)
    }
 }
 
+//Aktualizowanie maksymalnej i minimalnej temperatury
 void UpdateMaxMinTemperature(int16_t Temperature)
 {
    int16_t TemperatureHigh = TemperatureData.Temperature[TemperatureData.TemperatureSwitch].High24h;
@@ -341,6 +351,7 @@ void UpdateMaxMinTemperature(int16_t Temperature)
    }
 }
 
+//Aktualizowanie przelacznika z ktorego bufora temperatury aplikacja ma korzystac
 void UpdateTemperatureSwitch()
 {
    switch (TemperatureData.TemperatureSwitch)
@@ -354,6 +365,7 @@ void UpdateTemperatureSwitch()
    }
 }
 
+//Sortowanie babelkowe
 void BubbleSort(ADC_RESPONSE *Buffer, uint8_t BufferSize)
 {
    do
@@ -371,6 +383,7 @@ void BubbleSort(ADC_RESPONSE *Buffer, uint8_t BufferSize)
    } while (BufferSize > 1);
 }
 
+//Pobieranie Mediany
 ADC_RESPONSE GetMedian(ADC_RESPONSE *Buffer, uint8_t BufferSize)
 {
    ADC_RESPONSE Median = 0;
@@ -393,6 +406,7 @@ ADC_RESPONSE GetMedian(ADC_RESPONSE *Buffer, uint8_t BufferSize)
    return Median;
 }
 
+//Aktualizacja wartosci ADC temperatury
 void UpdateAdcData(ADC_RESPONSE Adc)
 {
    TemperatureData.Adc.Data[TemperatureData.Adc.WritePointer] = Adc;
@@ -409,6 +423,7 @@ void UpdateAdcData(ADC_RESPONSE Adc)
    }
 }
 
+//Odczytanie temperatury z modulu
 ADC_RESPONSE ReadAdcData()
 {
    STATUS Status = STATUS_FAILURE;
@@ -460,6 +475,7 @@ STATUS UpdateTemperature()
    return Status;
 }
 
+//Funkcja obsluguje eventy o tym ¿e wiadomoœci zostala wyslana
 ANT_MESG_Q_PP_TABLE_FUNC_TEMPLATE(HandleTransmit)
 {
    STATUS Status = STATUS_SUCCESS;
@@ -469,6 +485,7 @@ ANT_MESG_Q_PP_TABLE_FUNC_TEMPLATE(HandleTransmit)
 
    DMsgMessageNewLine(9, (unsigned char*)"EventTx ");
 
+   //Sprawdzenie czy nie zostala zazadana jakas strona
    if (TemperatureData.RequestedPage.Requested == REQUESTED)
    {
       PageToSend = TemperatureData.RequestedPage.Page;
@@ -479,6 +496,7 @@ ANT_MESG_Q_PP_TABLE_FUNC_TEMPLATE(HandleTransmit)
          TemperatureData.RequestedPage.Requested = NOT_REQUESTED;
       }
    }
+   //Sprawdzenie czy nie trzeba teraz wyslac dodatkowej strony
    else if (TemperatureData.BackgroundDataPage.CountSinceLast == BACKGROUND_PAGE_RATE)
    {
       switch (TemperatureData.BackgroundDataPage.Page)
@@ -495,6 +513,7 @@ ANT_MESG_Q_PP_TABLE_FUNC_TEMPLATE(HandleTransmit)
          break;
       }
    }
+   //Wyslanie strony glownej
    else
    {
       switch (TemperatureData.MainDataPage)
@@ -540,6 +559,7 @@ ANT_MESG_Q_PP_TABLE_FUNC_TEMPLATE(HandleTransmit)
    return Status;
 }
 
+//Funckja obslugujaca eventy zwiazane z odbiorem wiadomosci
 ANT_MESG_Q_PP_TABLE_FUNC_TEMPLATE(HandleReceive)
 {
    STATUS Status = STATUS_SUCCESS;

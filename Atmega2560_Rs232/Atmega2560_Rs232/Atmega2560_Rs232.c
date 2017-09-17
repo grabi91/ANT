@@ -10,6 +10,7 @@
 UART_DEFINE(extern)
 #define UART_ANT	UART2
 
+//Inicjalizacja modulu ANT
 STATUS ANT_Init()
 {
 	STATUS Status = STATUS_SUCCESS;
@@ -35,10 +36,11 @@ int main(void)
 	STATUS Status;
 	ANT_MESSAGE_ITEM AntMessage;
 	
-   USART_Init(IN BAUD, IN UART1);
+   //Inicjalizaca UART
 	USART_Init(IN 57600, IN UART_ANT);
 	USART_Init(IN 57600, IN UART3);
 	
+   //Inicjalizacja ADC
 	ADC_Init();	
 	
 	sei();
@@ -48,21 +50,26 @@ int main(void)
 	DMsgMessage(IN 14, IN (unsigned char*)". Dalszy ciag.");
 	DMsgMessageNewLine(IN 0, IN (unsigned char*)"");
 	
+   //Inicjalizacja ANT
 	Status = ANT_Init();
 	
 	DMsgMessageNewLine(IN 2, IN (unsigned char*)"1");
 
+   //Inicjalizacja profilu ANT+ zwiazanego z temperatura
 	Status = TemperatureSensorInit();
 	
 	DMsgMessageNewLine(IN 2, IN (unsigned char*)"2");
 			
 	while(1)
-    {
+   {
+      //Sprawdzenie czy sa nowe wiadomosci od modulu ANT
 		Status = ANT_Framer_GetMessage(&AntMessage);
 		if (STATUS_SUCCESS == Status)
 		{
+         //Przeprocesowanie odebranej wiadomosci
 			Status = ANT_Mesg_Q_ProcessPayload(&AntMessage);
 
+         //Jesli cos poszlo nie tak, wyswietlona zostaje odebrana wiadomosc
 			if (Status != STATUS_SUCCESS)
 			{
 				unsigned char temp[4];
@@ -77,5 +84,5 @@ int main(void)
 				}
 			}
 		}
-    }
+   }
 }
