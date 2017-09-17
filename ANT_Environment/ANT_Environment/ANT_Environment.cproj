@@ -12,9 +12,9 @@
     <OutputFileName>$(MSBuildProjectName)</OutputFileName>
     <OutputFileExtension>.elf</OutputFileExtension>
     <OutputDirectory>$(MSBuildProjectDirectory)\$(Configuration)</OutputDirectory>
-    <AssemblyName>Atmega2560_Rs232</AssemblyName>
-    <Name>Atmega2560_Rs232</Name>
-    <RootNamespace>Atmega2560_Rs232</RootNamespace>
+    <AssemblyName>ANT_Environment</AssemblyName>
+    <Name>ANT_Environment</Name>
+    <RootNamespace>ANT_Environment</RootNamespace>
     <ToolchainFlavour>Native</ToolchainFlavour>
     <KeepTimersRunning>true</KeepTimersRunning>
     <OverrideVtor>false</OverrideVtor>
@@ -123,7 +123,7 @@
     <Compile Include="ANT\ANT_Message_Queue.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="Atmega2560_Rs232.c">
+    <Compile Include="ANT_Environment.c">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="Debug_MSG\Debug_Msg.c">
@@ -138,10 +138,10 @@
     <Compile Include="FIFO\Fifo.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="Rs232\Rs232.c">
+    <Compile Include="UART\UART.c">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="Rs232\Rs232.h">
+    <Compile Include="UART\UART.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="TemperatureSensor\TemperatureSensor.c">
@@ -159,7 +159,7 @@
     <Folder Include="Debug_MSG" />
     <Folder Include="ADC" />
     <Folder Include="ANT" />
-    <Folder Include="Rs232" />
+    <Folder Include="UART" />
     <Folder Include="TemperatureSensor\" />
   </ItemGroup>
   <Import Project="$(AVRSTUDIO_EXE_PATH)\\Vs\\Compiler.targets" />

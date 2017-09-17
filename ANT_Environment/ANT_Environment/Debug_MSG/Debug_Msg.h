@@ -1,7 +1,7 @@
 #include "..\typedef.h"
 #ifdef WIN32
 #else
-#include "..\Rs232\RS232.h"
+#include "..\UART\UART.h"
 #endif
 
 #ifndef DEBUG_MSG_H_

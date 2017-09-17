@@ -1,5 +1,5 @@
 #include "typedef.h"
-#include "Rs232\Rs232.h"
+#include "UART\UART.h"
 #include "Debug_MSG\Debug_Msg.h"
 #include "ADC\ADC.h"
 #include "ANT/ANT_Framer.h"
